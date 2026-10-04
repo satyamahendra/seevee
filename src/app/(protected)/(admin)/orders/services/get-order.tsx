@@ -5,6 +5,7 @@ import {authServer} from "@/lib/auth-server"
 import prisma from "@/lib/prisma/client"
 import {handleServerError} from "@/utils/helpers/handle-server-errors"
 import {ServerResult} from "@/utils/types/server-action"
+import {requirePermissions} from "@/utils/helpers/has-ability-server"
 
 const orderSelect = Prisma.validator<Prisma.OrderSelect>()({
     id: true,
@@ -32,6 +33,7 @@ export async function getOrder(id: string): Promise<ServerResult<GetOrder>> {
     try {
         const session = await authServer()
         if (!session) throw new Error("Unauthorized")
+        await requirePermissions(["read orders", "manage orders"])
 
         const order = await prisma.order.findUnique({
             select: orderSelect,

@@ -5,6 +5,7 @@ import {revalidatePath} from "next/cache"
 import {ServerResult} from "@/utils/types/server-action"
 import {authServer} from "@/lib/auth-server"
 import {handleServerError} from "@/utils/helpers/handle-server-errors"
+import {requirePermissions} from "@/utils/helpers/has-ability-server"
 import {MessageFormSchema, messageSchema} from "../utils/schema"
 import {ReportMessage} from "@/generated/index"
 
@@ -23,6 +24,7 @@ export async function sendMessage(data: MessageFormSchema): Promise<ServerResult
     try {
         const session = await authServer()
         if (!session) throw new Error("Unauthorized")
+        await requirePermissions(["update reports", "manage reports"])
 
         const report = await prisma.reportMessage.create({
             data: {

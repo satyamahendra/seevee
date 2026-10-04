@@ -4,6 +4,7 @@ import {Prisma} from "@/generated/index"
 import prisma from "@/lib/prisma/client"
 import {PAGE_SIZE} from "@/utils/constants/pagination"
 import {Pagination} from "@/utils/types/pagination"
+import {requirePermissions} from "@/utils/helpers/has-ability-server"
 
 const userSelect = Prisma.validator<Prisma.UserSelect>()({
     id: true,
@@ -27,6 +28,8 @@ export type UsersPage = {
 }
 
 export async function getUsers(page: number = 1, search = ""): Promise<UsersPage> {
+    await requirePermissions(["read users", "manage users"])
+
     const skip = (page - 1) * PAGE_SIZE
 
     const where = search && {

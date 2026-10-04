@@ -22,7 +22,8 @@ export const auth = betterAuth({
                 after: async (user) => {
                     let role_name = "member"
 
-                    if (process.env.WHITELISTED_EMAILS?.split(",").includes(user.email)) {
+                    const whitelist = (process.env.WHITELISTED_EMAILS ?? "").split(",").map((email) => email.trim().toLowerCase())
+                    if (whitelist.includes(user.email?.trim().toLowerCase())) {
                         role_name = "admin"
                     }
 

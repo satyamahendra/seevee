@@ -22,7 +22,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         let status = "pending"
         if (transactionStatus == "capture") {
             if (fraudStatus == "challenge") {
-                status = "challenge"
+                status = "pending"
             } else if (fraudStatus == "accept") {
                 status = "success"
             }

@@ -25,7 +25,16 @@ const Page = async ({searchParams}: PageProps) => {
 
     return (
         <AnimDiv className="flex flex-col gap-4 pb-4">
-            <PageHeader title="Roles" description="Manage roles" icon={<PiCardholder />} subComponent={<RoleDetailModal />} />
+            <PageHeader
+                title="Roles"
+                description="Manage roles"
+                icon={<PiCardholder />}
+                subComponent={
+                    <div className="flex justify-end">
+                        <RoleDetailModal />
+                    </div>
+                }
+            />
             <SearchParams className="w-48 self-end" />
             <Suspense
                 key={`${pageNum}-${search}`}

@@ -5,6 +5,7 @@ import {authServer} from "@/lib/auth-server"
 import prisma from "@/lib/prisma/client"
 import {handleServerError} from "@/utils/helpers/handle-server-errors"
 import {ServerResult} from "@/utils/types/server-action"
+import {requirePermissions} from "@/utils/helpers/has-ability-server"
 
 const roleSelect = Prisma.validator<Prisma.RoleSelect>()({
     name: true,
@@ -23,6 +24,7 @@ export async function getRole(name: string): Promise<ServerResult<GetRole>> {
         const session = await authServer()
 
         if (!session) throw new Error("Unauthorized")
+        await requirePermissions(["read roles", "manage roles"])
 
         const role = await prisma.role.findUnique({
             where: {name},

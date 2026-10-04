@@ -3,6 +3,7 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
+            target: runner
         container_name: svtyv-app
         restart: unless-stopped
         env_file:
@@ -11,11 +12,26 @@ services:
             DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
             NODE_ENV: production
         depends_on:
-            db:
-                condition: service_healthy
+            migrator:
+                condition: service_completed_successfully
         ports:
             - "3001:3000"
-        command: sh -c "npx prisma migrate deploy && node server.js"
+
+    migrator:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: migrator
+        container_name: svtyv-migrator
+        env_file:
+            - .env
+        environment:
+            DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+        depends_on:
+            db:
+                condition: service_healthy
+        restart: "no"
+
     db:
         image: postgres:17-alpine
         container_name: svtyv-db

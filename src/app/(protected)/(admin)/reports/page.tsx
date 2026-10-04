@@ -17,7 +17,7 @@ type PageProps = {
 }
 
 const Page = async ({searchParams}: PageProps) => {
-    const hasPerm = await hasPermissions(["read products", "manage products"])
+    const hasPerm = await hasPermissions(["read reports", "manage reports"])
     if (!hasPerm) return redirect("/home")
 
     const {page, search} = await searchParams

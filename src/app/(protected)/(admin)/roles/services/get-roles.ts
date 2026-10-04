@@ -5,6 +5,7 @@ import {Prisma} from "@/generated/index"
 import {authServer} from "@/lib/auth-server"
 import {Pagination} from "@/utils/types/pagination"
 import {PAGE_SIZE} from "@/utils/constants/pagination"
+import {requirePermissions} from "@/utils/helpers/has-ability-server"
 
 const roleSelect = Prisma.validator<Prisma.RoleSelect>()({
     name: true,
@@ -27,6 +28,7 @@ export const getRoles = async (page: number = 1, search = ""): Promise<GetRoles>
     const session = await authServer()
 
     if (!session) throw new Error("Unauthorized")
+    await requirePermissions(["read roles", "manage roles"])
 
     const where: Prisma.RoleWhereInput = search ? {name: {contains: search, mode: "insensitive"}} : {}
 

@@ -6,6 +6,7 @@ import {ServerResult} from "@/utils/types/server-action"
 import {authServer} from "@/lib/auth-server"
 import {handleServerError} from "@/utils/helpers/handle-server-errors"
 import {CRUD_ACTIONS} from "../../roles/utils/permission-matrix"
+import {requirePermissions} from "@/utils/helpers/has-ability-server"
 
 export async function createPermissionsFromAttribute(attribute: string): Promise<ServerResult<null>> {
     const trimmed = attribute.trim().toLowerCase()
@@ -17,6 +18,7 @@ export async function createPermissionsFromAttribute(attribute: string): Promise
     try {
         const session = await authServer()
         if (!session) throw new Error("Unauthorized")
+        await requirePermissions(["create permissions", "manage permissions"])
 
         const names = CRUD_ACTIONS.map((action) => `${action} ${trimmed}`)
 

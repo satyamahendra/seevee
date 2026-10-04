@@ -7,6 +7,7 @@ import {PAGE_SIZE} from "@/utils/constants/pagination"
 import {handleServerError} from "@/utils/helpers/handle-server-errors"
 import {Pagination} from "@/utils/types/pagination"
 import {ServerResult} from "@/utils/types/server-action"
+import {requirePermissions} from "@/utils/helpers/has-ability-server"
 
 const reportSelect = Prisma.validator<Prisma.ReportSelect>()({
     id: true,
@@ -42,6 +43,7 @@ export async function getReports(page: number = 1, search = ""): Promise<ServerR
     try {
         const session = await authServer()
         if (!session) throw new Error("Unauthorized")
+        await requirePermissions(["read reports", "manage reports"])
 
         const where: Prisma.ReportWhereInput = search
             ? {

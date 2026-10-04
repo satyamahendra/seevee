@@ -7,6 +7,7 @@ import {ServerResult} from "@/utils/types/server-action"
 import {Role} from "@/generated/index"
 import {authServer} from "@/lib/auth-server"
 import {handleServerError} from "@/utils/helpers/handle-server-errors"
+import {requirePermissions} from "@/utils/helpers/has-ability-server"
 
 export async function createUpdateRole(data: RoleFormSchema): Promise<ServerResult<Role>> {
     try {
@@ -14,6 +15,7 @@ export async function createUpdateRole(data: RoleFormSchema): Promise<ServerResu
 
         const session = await authServer()
         if (!session) throw new Error("Unauthorized")
+        await requirePermissions(["create roles", "update roles", "manage roles"])
 
         const {name, name_before, permissions = [], is_active} = parsed.data as RoleFormSchema
 

@@ -15,3 +15,7 @@ export async function hasRoles(roles: string[]) {
     if (!userRoles) return false
     return roles.some((role) => userRoles.includes(role))
 }
+
+export async function requirePermissions(permissions: string[]) {
+    if (!(await hasPermissions(permissions))) throw new Error("Forbidden")
+}

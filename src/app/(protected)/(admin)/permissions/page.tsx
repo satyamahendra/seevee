@@ -13,7 +13,16 @@ const Page = async () => {
 
     return (
         <AnimDiv className="flex flex-col gap-4 pb-4">
-            <PageHeader title="Permissions" description="Manage permission attributes and role connections" icon={<PiKey />} subComponent={<CreateAttributeModal />} />
+            <PageHeader
+                title="Permissions"
+                description="Manage permission attributes and role connections"
+                icon={<PiKey />}
+                subComponent={
+                    <div className="flex justify-end">
+                        <CreateAttributeModal />
+                    </div>
+                }
+            />
             <PermissionDetailModal />
             <PermissionList />
         </AnimDiv>

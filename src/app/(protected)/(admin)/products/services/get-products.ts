@@ -7,6 +7,7 @@ import {PAGE_SIZE} from "@/utils/constants/pagination"
 import {handleServerError} from "@/utils/helpers/handle-server-errors"
 import {Pagination} from "@/utils/types/pagination"
 import {ServerResult} from "@/utils/types/server-action"
+import {requirePermissions} from "@/utils/helpers/has-ability-server"
 
 const productSelect = Prisma.validator<Prisma.ProductSelect>()({
     id: true,
@@ -40,6 +41,7 @@ export async function getProducts(page: number = 1, search = "", limit = PAGE_SI
     try {
         const session = await authServer()
         if (!session) throw new Error("Unauthorized")
+        await requirePermissions(["read products", "manage products"])
 
         const where: Prisma.ProductWhereInput = search
             ? {

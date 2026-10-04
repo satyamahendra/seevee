@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma/client"
 import {authServer} from "@/lib/auth-server"
 import {handleServerError} from "@/utils/helpers/handle-server-errors"
 import {ServerResult} from "@/utils/types/server-action"
+import {requirePermissions} from "@/utils/helpers/has-ability-server"
 
 export type MatrixRole = {
     name: string
@@ -21,6 +22,7 @@ export async function getPermissionsMatrix(): Promise<ServerResult<PermissionsMa
     try {
         const session = await authServer()
         if (!session) throw new Error("Unauthorized")
+        await requirePermissions(["read permissions", "manage permissions"])
 
         const [permissions, roles] = await Promise.all([
             prisma.permission.findMany({select: {name: true, is_active: true}, orderBy: {name: "asc"}}),

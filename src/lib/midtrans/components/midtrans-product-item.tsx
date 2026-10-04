@@ -27,8 +27,7 @@ const ProductItem = () => {
     })
 
     const handleCheckOrderStatus = async () => {
-        const res = await refetchOrder()
-        console.log(res.data?.data.data.transaction_status === "settlement")
+        await refetchOrder()
     }
 
     return (

@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma/client"
 import {revalidatePath} from "next/cache"
 import {authServer} from "@/lib/auth-server"
 import {handleServerError} from "@/utils/helpers/handle-server-errors"
+import {requirePermissions} from "@/utils/helpers/has-ability-server"
 import {userSchema, UserFormSchema} from "../utils/schemas"
 import {ServerResult} from "@/utils/types/server-action"
 import {User} from "@/generated/index"
@@ -14,6 +15,7 @@ export async function updateUser(data: UserFormSchema): Promise<ServerResult<Use
 
         const session = await authServer()
         if (!session) throw new Error("Unauthorized")
+        await requirePermissions(["manage users"])
 
         const {id, permissions = [], roles = []} = parsed
 

@@ -5,6 +5,7 @@ import {authServer} from "@/lib/auth-server"
 import prisma from "@/lib/prisma/client"
 import {handleServerError} from "@/utils/helpers/handle-server-errors"
 import {ServerResult} from "@/utils/types/server-action"
+import {requirePermissions} from "@/utils/helpers/has-ability-server"
 
 const productSelect = Prisma.validator<Prisma.ProductSelect>()({
     id: true,
@@ -33,6 +34,7 @@ export async function getProduct(id: string): Promise<ServerResult<GetProduct>> 
     try {
         const session = await authServer()
         if (!session) throw new Error("Unauthorized")
+        await requirePermissions(["read products", "manage products"])
 
         const product = await prisma.product.findUnique({
             select: productSelect,

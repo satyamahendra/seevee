@@ -120,6 +120,8 @@ export function classifyError(error: unknown): ClassifiedError {
 
     // Native
     if (error instanceof Error) {
+        if (error.message === "Unauthorized") return {message: "Unauthorized", status: 401}
+        if (error.message === "Forbidden") return {message: "Forbidden", status: 403}
         return {message: error.message, status: 500}
     }
 

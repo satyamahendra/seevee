@@ -5,6 +5,7 @@ import {authServer} from "@/lib/auth-server"
 import prisma from "@/lib/prisma/client"
 import {handleServerError} from "@/utils/helpers/handle-server-errors"
 import {ServerResult} from "@/utils/types/server-action"
+import {requirePermissions} from "@/utils/helpers/has-ability-server"
 
 const reportSelect = Prisma.validator<Prisma.ReportSelect>()({
     id: true,
@@ -53,6 +54,7 @@ export async function getReport(id: string): Promise<ServerResult<GetReport>> {
     try {
         const session = await authServer()
         if (!session) throw new Error("Unauthorized")
+        await requirePermissions(["read reports", "manage reports"])
 
         const report = await prisma.report.findUnique({
             select: reportSelect,

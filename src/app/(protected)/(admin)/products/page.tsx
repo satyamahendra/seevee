@@ -27,7 +27,16 @@ const Page = async ({searchParams}: PageProps) => {
 
     return (
         <AnimDiv className="flex flex-col gap-4 pb-4">
-            <PageHeader title="Products" description="Manage products" icon={<PiPackage />} subComponent={<CreateProductButton />} />
+            <PageHeader
+                title="Products"
+                description="Manage products"
+                icon={<PiPackage />}
+                subComponent={
+                    <div className="flex justify-end">
+                        <CreateProductButton />
+                    </div>
+                }
+            />
             <ProductDetailDrawer />
             <SearchParams className="w-48 self-end" />
             <Suspense

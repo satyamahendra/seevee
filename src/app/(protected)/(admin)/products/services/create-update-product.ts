@@ -8,11 +8,13 @@ import {Product} from "@/generated/index"
 import {authServer} from "@/lib/auth-server"
 import {handleServerError} from "@/utils/helpers/handle-server-errors"
 import {ProductFormSchema, productSchema} from "../utils/schema"
+import {requirePermissions} from "@/utils/helpers/has-ability-server"
 
 export async function createUpdateProduct(data: ProductFormSchema): Promise<ServerResult<Pick<Product, "id">>> {
     try {
         const session = await authServer()
         if (!session) throw new Error("Unauthorized")
+        await requirePermissions(["create products", "update products", "manage products"])
 
         const parsed = productSchema.parse(data)
 
@@ -65,7 +67,6 @@ export async function createUpdateProduct(data: ProductFormSchema): Promise<Serv
         const action = id ? "updated" : "created"
         return {success: true, data: product, message: `Product ${action} successfully`}
     } catch (error) {
-        console.log(error)
         return handleServerError(error)
     }
 }

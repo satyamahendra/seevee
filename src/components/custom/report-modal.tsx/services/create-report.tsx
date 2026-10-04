@@ -11,7 +11,7 @@ import {revalidatePath} from "next/cache"
 export const createReport = async (data: ReportModalSchema): Promise<ServerResult<Report>> => {
     try {
         const session = await authServer()
-        if (!session) throw new Error("Unauthorized!")
+        if (!session) throw new Error("Unauthorized")
 
         const report = await prisma.report.create({
             data: {

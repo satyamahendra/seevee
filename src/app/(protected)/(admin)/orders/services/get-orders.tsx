@@ -7,6 +7,7 @@ import {PAGE_SIZE} from "@/utils/constants/pagination"
 import {handleServerError} from "@/utils/helpers/handle-server-errors"
 import {Pagination} from "@/utils/types/pagination"
 import {ServerResult} from "@/utils/types/server-action"
+import {requirePermissions} from "@/utils/helpers/has-ability-server"
 
 const orderSelect = Prisma.validator<Prisma.OrderSelect>()({
     id: true,
@@ -41,6 +42,7 @@ export async function getOrders(page: number = 1, search = ""): Promise<ServerRe
     try {
         const session = await authServer()
         if (!session) throw new Error("Unauthorized")
+        await requirePermissions(["read orders", "manage orders"])
 
         const where: Prisma.OrderWhereInput = search
             ? {
