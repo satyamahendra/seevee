@@ -2,7 +2,7 @@
 
 import {useQueryParams} from "@/utils/hooks/useQueryParams"
 import {GetProduct} from "../services/get-products"
-import {PiCube, PiPackage, PiPencil} from "react-icons/pi"
+import {PiCoins, PiCube, PiPackage, PiPencil} from "react-icons/pi"
 import {Separator} from "@/components/ui/separator"
 import {normalizeString} from "@/utils/helpers/normalize-string"
 import {Button} from "@/components/ui/button"
@@ -25,6 +25,11 @@ const ProductItem = ({product}: ProductItemProps) => {
                     <span className="flex items-center gap-1">
                         <PiCube className="text-sm" />
                         {normalizeString(product.type)}
+                    </span>
+                    <Separator orientation="vertical" />
+                    <span className="flex items-center gap-1">
+                        <PiCoins className="text-sm" />
+                        {product.credit} credits
                     </span>
                     <Separator orientation="vertical" />
                     <span className="flex items-center gap-1">

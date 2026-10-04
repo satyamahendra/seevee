@@ -13,6 +13,7 @@ const productSelect = Prisma.validator<Prisma.ProductSelect>()({
     name: true,
     price_alternate: true,
     price_actual: true,
+    credit: true,
     type: true,
     is_active: true,
     bundle_items: {

@@ -15,12 +15,12 @@ const Layout = async ({children}: LayoutProps) => {
     }
 
     return (
-        <div className="flex h-screen">
+        <div className="flex h-dvh">
             <div className="flex flex-col items-center w-full bg-background h-full">
                 <Topbar />
-                <div className="max-w-260 flex w-full flex-1 min-h-0">
+                <div className="max-w-300 flex w-full flex-1 min-h-0">
                     <Sidebar />
-                    <div className="flex-1 border-l p-6">{children}</div>
+                    <div className="flex-1 p-6 sm:border-l w-full">{children}</div>
                 </div>
             </div>
         </div>

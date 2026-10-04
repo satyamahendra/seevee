@@ -14,6 +14,7 @@ how to start:
    NEXT_PUBLIC_MIDTRANS_CLIENT_KEY=
    NEXT_PUBLIC_MIDTRANS_URL=
    WHITELISTED_EMAILS=
+   GEMINI_APIKEY=
 
 3. seed data
    -- Permissions
@@ -29,7 +30,7 @@ how to start:
    ('read orders'),
    ('manage orders'),
    ('read products'),
-   ('manage products')
+   ('manage products'),
    ('read reports'),
    ('manage reports')
    ON CONFLICT (name) DO NOTHING;

@@ -18,8 +18,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-    title: "Svtyv",
-    description: "eyes on da bag",
+    title: "Seevee",
+    description: "AI-assisted resume builder",
 }
 
 export default function RootLayout({

@@ -41,6 +41,7 @@ export const auth = betterAuth({
                     ...user,
                     roles: sessionExtended?.roles,
                     permissions: sessionExtended?.permissions,
+                    totalCredits: sessionExtended?.totalCredits,
                 },
                 session,
             }

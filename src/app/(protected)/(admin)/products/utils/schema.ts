@@ -10,6 +10,7 @@ export const productSchema = z.object({
     name: z.string().min(1, "Product name is required"),
     price_alternate: z.number().min(0),
     price_actual: z.number().min(0),
+    credit: z.number().min(0),
     type: z.enum(["single", "bundle"]),
     is_active: z.boolean(),
     bundle_items: z

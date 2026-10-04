@@ -28,6 +28,9 @@ export async function getSessionExtended(userId: string) {
                 },
                 select: {permission_name: true},
             },
+            userCredits: {
+                select: {totalCredits: true},
+            },
         },
     })
 
@@ -41,5 +44,5 @@ export async function getSessionExtended(userId: string) {
 
     const permissions = [...new Set([...directPermissions, ...rolePermissions])]
 
-    return {roles, permissions}
+    return {roles, permissions, totalCredits: user.userCredits[0]?.totalCredits ?? 0}
 }

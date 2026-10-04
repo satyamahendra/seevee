@@ -58,8 +58,8 @@ const Sidebar = () => {
                         }></DrawerTrigger>
                     <DrawerContent aria-describedby="permission-form" className="">
                         <DrawerHeader>
-                            <DrawerTitle className="flex items-center gap-4">Svtyv</DrawerTitle>
-                            <DrawerDescription className="flex items-center gap-4">Welcome to svtyv</DrawerDescription>
+                            <DrawerTitle className="flex items-center gap-4">Seevee</DrawerTitle>
+                            <DrawerDescription className="flex items-center gap-4">Welcome to seevee</DrawerDescription>
                         </DrawerHeader>
                         <div className="flex-1 overflow-y-auto">
                             <ul className="flex flex-col gap-1 p-4">

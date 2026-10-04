@@ -425,3 +425,20 @@
 body {
     position: relative;
 }
+
+.printContent {
+    display: none;
+
+    @media print {
+        display: block;
+
+        .avoid-break {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .force-page-break {
+            page-break-after: always;
+        }
+    }
+}

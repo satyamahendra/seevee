@@ -55,6 +55,7 @@ const ProductForm = () => {
                       name: "",
                       price_alternate: 0,
                       price_actual: 0,
+                      credit: 0,
                       type: "single",
                       is_active: true,
                       bundle_items: [],
@@ -64,6 +65,7 @@ const ProductForm = () => {
                       name: product?.name ?? "",
                       price_alternate: product?.price_alternate ?? 0,
                       price_actual: product?.price_actual ?? 0,
+                      credit: product?.credit ?? 0,
                       type: product?.type ?? "single",
                       is_active: product?.is_active ?? true,
                       bundle_items:
@@ -237,6 +239,24 @@ const ProductForm = () => {
                                                     aria-invalid={fieldState.invalid}
                                                     placeholder="Price Alternate"
                                                     onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : 0)}
+                                                />
+                                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                                            </Field>
+                                        )}
+                                    />
+                                    <Controller
+                                        name="credit"
+                                        control={form.control}
+                                        render={({field, fieldState}) => (
+                                            <Field data-invalid={fieldState.invalid}>
+                                                <FieldLabel htmlFor="credit">Credits granted</FieldLabel>
+                                                <Input
+                                                    {...field}
+                                                    type="number"
+                                                    id="credit"
+                                                    aria-invalid={fieldState.invalid}
+                                                    placeholder="Credits on purchase"
+                                                    onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value, 10) : 0)}
                                                 />
                                                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                                             </Field>

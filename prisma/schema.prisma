@@ -56,7 +56,9 @@ model User {
   roles         UserRole[]
   orders        Order[]
   permissions   UserPermission[]
-  entitlements  Entitlement[]
+  resumes       Resume[]
+  userCredits   UserCredit[]
+  creditTransactions CreditTransaction[]
   reports       Report[]
   report_messages ReportMessage[]
 
@@ -168,6 +170,7 @@ model Product {
   name        String
   price_alternate   Int @default(0)
   price_actual   Int @default(0)
+  credit      Int         @default(0)
   type        ProductType @default(single)
   is_active   Boolean     @default(true)
   created_at   DateTime    @default(now())
@@ -175,7 +178,6 @@ model Product {
 
   bundle_items BundleItem[] @relation("bundle_items")
   included_in  BundleItem[] @relation("products_in_bundle")
-  entitlements Entitlement[]
 
   @@map("product")
 }
@@ -207,29 +209,51 @@ model Order {
   midtrans_redirect   String?
 
   user                User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  entitlements        Entitlement[]
   reports             Report[]
 
   @@index([user_id])
   @@map("order")
 }
 
-model Entitlement {
-  id         String    @id @default(uuid())
-  user_id    String
-  product_id String
-  order_id   String
-  expires_at DateTime?
-  created_at  DateTime  @default(now())
+model Resume {
+  id        String   @id @default(uuid())
+  userId    String
+  data      Json     @default("[]")
+  isPublic  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user    User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [product_id], references: [id])
-  order   Order   @relation(fields: [order_id], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([user_id])
-  @@index([order_id])
-  @@index([user_id, product_id])
-  @@map("entitlement")
+  @@index([userId])
+  @@map("resume")
+}
+
+model UserCredit {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  totalCredits Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_credit")
+}
+
+model CreditTransaction {
+  id         String   @id @default(uuid())
+  userId     String
+  creditsUsed Int     @default(0)
+  result     Json?
+  actionType String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("credit_transaction")
 }
 
 

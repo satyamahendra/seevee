@@ -16,7 +16,7 @@ export async function createUpdateProduct(data: ProductFormSchema): Promise<Serv
 
         const parsed = productSchema.parse(data)
 
-        const {id, name, type, price_actual, price_alternate, bundle_items, is_active} = parsed
+        const {id, name, type, price_actual, price_alternate, credit, bundle_items, is_active} = parsed
 
         const bundleItemsPayload =
             bundle_items &&
@@ -34,6 +34,7 @@ export async function createUpdateProduct(data: ProductFormSchema): Promise<Serv
                     type,
                     price_actual,
                     price_alternate,
+                    credit,
                     is_active,
                     bundle_items: {
                         deleteMany: {},
@@ -49,6 +50,7 @@ export async function createUpdateProduct(data: ProductFormSchema): Promise<Serv
                     type,
                     price_actual,
                     price_alternate,
+                    credit,
                     is_active,
                     bundle_items: {
                         create: bundleItemsPayload,
