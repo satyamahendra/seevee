@@ -23,14 +23,6 @@ export function hasAccess(item: MenuItem, userPermissions: string[], userRoles: 
 export const menuItems: MenuItem[] = [
     {
         label: "Home",
-        href: "/home",
-        icon: <PiHouse />,
-        permissions: ["read home", "manage home"],
-        roles: [],
-        children: [],
-    },
-    {
-        label: "Resume",
         href: "/resume",
         icon: <PiFileText />,
         permissions: [],
@@ -38,7 +30,7 @@ export const menuItems: MenuItem[] = [
         children: [],
     },
     {
-        label: "History",
+        label: "My Orders",
         href: "/history",
         icon: <PiReceipt />,
         permissions: [],

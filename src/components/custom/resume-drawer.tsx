@@ -3,15 +3,17 @@
 import {cloneElement, useState} from "react"
 import {Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle} from "@/components/ui/drawer"
 import {useScreenSize} from "@/utils/hooks/useScreenSize"
+import {Tooltip, TooltipContent, TooltipTrigger} from "../ui/tooltip"
 
 type ResumeDrawerProps = {
     trigger: React.ReactElement
     title?: React.ReactNode
     description?: React.ReactNode
     children: React.ReactNode
+    tooltip?: React.ReactNode
 }
 
-export default function ResumeDrawer({trigger, title, description, children}: ResumeDrawerProps) {
+export default function ResumeDrawer({trigger, title, description, children, tooltip}: ResumeDrawerProps) {
     const {isMobile} = useScreenSize()
     const [open, setOpen] = useState(false)
 
@@ -19,7 +21,14 @@ export default function ResumeDrawer({trigger, title, description, children}: Re
 
     return (
         <>
-            {triggerWithClick}
+            {tooltip ? (
+                <Tooltip>
+                    <TooltipTrigger asChild>{triggerWithClick}</TooltipTrigger>
+                    <TooltipContent>{tooltip}</TooltipContent>
+                </Tooltip>
+            ) : (
+                triggerWithClick
+            )}
             <Drawer swipeDirection={isMobile ? "down" : "left"} open={open} onOpenChange={setOpen}>
                 <DrawerContent className="[--drawer-content-width:min(100dvw,32rem)]">
                     <DrawerHeader className="text-left">

@@ -54,6 +54,11 @@ export default function AiButton({contentStates, resumeId, className}: AiButtonP
                 body: JSON.stringify({payload, userPrompt, resumeId}),
             })
 
+            if (!response.ok) {
+                const errorBody = (await response.json().catch(() => null)) as {error?: string} | null
+                throw new Error(errorBody?.error ?? "Resume generation is temporarily unavailable")
+            }
+
             if (!response.body) throw new Error("No response body")
 
             const reader = response.body.getReader()
@@ -66,7 +71,7 @@ export default function AiButton({contentStates, resumeId, className}: AiButtonP
                     <div className="flex items-center gap-2 ">
                         <PiMagicWandFill className="text-xl" color="#60A5FA" />
                         Generating your resume...
-                    </div>
+                    </div>,
                 )
             }
 
@@ -97,8 +102,8 @@ export default function AiButton({contentStates, resumeId, className}: AiButtonP
                 toast("Failed to parse AI response as JSON.")
             }
         } catch (error) {
-            console.error(error)
-            toast("Something went wrong while generating resume.")
+            console.error("Resume AI request failed", error)
+            toast(error instanceof Error ? error.message : "Something went wrong while generating resume.")
         } finally {
             setIsLoading(false)
         }
@@ -106,9 +111,15 @@ export default function AiButton({contentStates, resumeId, className}: AiButtonP
 
     return (
         <>
-            <Button disabled={isLoading} onClick={handleOpenModal} size="sm" className={`h-7 bg-blue-400 hover:bg-blue-500 duration-200 ${className ?? "w-full"}`}>
-                {isLoading ? null : "AI Assist"}
-                {isLoading ? <PiCircleDashed className="animate-spin" /> : <PiMagicWand />}
+            <Button
+                disabled={isLoading}
+                onClick={handleOpenModal}
+                size="sm"
+                className={`relative w-24 bg-blue-400 hover:bg-blue-500 duration-200 ${className ?? "w-full"}`}>
+                {isLoading ? null : "AI Tailor"}
+                {isLoading ? <PiCircleDashed className="animate-spin" /> : <PiMagicWandFill />}
+                <div className="w-3 h-3 bg-blue-300 rounded-xs rotate-45 aspect-square absolute -top-1 -right-1"></div>
+                <div className="w-3 h-3 bg-blue-300 rounded-xs rotate-45 aspect-square absolute -top-1 -right-1 animate-ping"></div>
             </Button>
 
             <Drawer swipeDirection={isMobile ? "down" : "right"} open={open} onOpenChange={setOpen}>
@@ -131,7 +142,7 @@ export default function AiButton({contentStates, resumeId, className}: AiButtonP
                             placeholder="How do you want your resume to be?"
                             value={prompt}
                             onChange={(e) => setPrompt(e.target.value)}
-                            className="h-[300px]"
+                            className="h-75"
                         />
                         <Button
                             className="w-full"

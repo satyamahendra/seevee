@@ -10,7 +10,7 @@ type UserCreditsBoxProps = {
 
 export default function UserCreditsBox({credits}: UserCreditsBoxProps) {
     return (
-        <Link href="/#pricing" className="cursor-pointer flex items-center text-xs border rounded-md bg-primary-foreground">
+        <Link href="/#pricing" className="cursor-pointer h-8 flex items-center text-xs border rounded-md bg-primary-foreground">
             <div className="border-r px-2 py-1 flex items-center gap-1 font-semibold">
                 <PiPlusBold /> Get Credits
             </div>

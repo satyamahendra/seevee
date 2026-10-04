@@ -40,7 +40,7 @@ const Topbar = () => {
                         seevee
                     </div>
                 )}
-                <ul className="flex gap-2 ml-auto">
+                <ul className="flex gap-2 ml-auto items-center">
                     <li>
                         <UserCreditsBox credits={session?.user?.totalCredits ?? 0} />
                     </li>

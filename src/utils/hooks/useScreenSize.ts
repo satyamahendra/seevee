@@ -19,10 +19,7 @@ function getScreenSize(width: number): ScreenSize {
 }
 
 export function useScreenSize() {
-    const [screenSize, setScreenSize] = useState<ScreenSize>(() => {
-        if (typeof window === "undefined") return "sm"
-        return getScreenSize(window.innerWidth)
-    })
+    const [screenSize, setScreenSize] = useState<ScreenSize>("sm")
 
     const isMobile = screenSize === "sm"
     const isDesktop = screenSize === "xl" || screenSize === "2xl"

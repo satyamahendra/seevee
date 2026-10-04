@@ -8,7 +8,6 @@ import {ContentStatesType, FontStylesType, HandleAddContentType, HandleDeleteCon
 import {fontStyles} from "../_static/var"
 import Link from "next/link"
 import StructureButton from "./structure-button"
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import ConfirmationPopover from "@/components/custom/confirmation-popover"
 import {Switch} from "@/components/ui/switch"
 import {Label} from "@/components/ui/label"
@@ -49,18 +48,24 @@ export default function MenuActions({
     return (
         <div className="flex flex-col gap-1 w-full">
             {showFont && (
-                <Select value={selectedFontStyle} onValueChange={(value) => setSelectedFontStyle(value as FontStylesType)}>
-                    <SelectTrigger size="sm" className="h-7 gap-1 pr-1.5 text-xs w-full">
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
+                <div className="rounded-xl border bg-card p-2 shadow-sm">
+                    <p className="px-2 pb-2 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Font style</p>
+                    <div className="grid grid-cols-2 gap-1.5">
                         {fontStyles.map((fs) => (
-                            <SelectItem key={fs} value={fs}>
+                            <Button
+                                key={fs}
+                                type="button"
+                                size="sm"
+                                variant={selectedFontStyle === fs ? "secondary" : "ghost"}
+                                className={`h-9 justify-start px-3 text-sm ${selectedFontStyle === fs ? "ring-1 ring-primary/30" : ""} font-${fs}`}
+                                onClick={() => setSelectedFontStyle(fs as FontStylesType)}
+                                aria-pressed={selectedFontStyle === fs}
+                            >
                                 {fs.charAt(0).toUpperCase() + fs.slice(1)}
-                            </SelectItem>
+                            </Button>
                         ))}
-                    </SelectContent>
-                </Select>
+                    </div>
+                </div>
             )}
 
             <div className="p-2 flex flex-col items-center gap-2 rounded-lg bg-muted/50">
@@ -96,7 +101,7 @@ export default function MenuActions({
 
             <ConfirmationPopover
                 button={
-                    <Button size="sm" variant="ghost" className="w-full h-6 flex justify-start gap-3 px-2">
+                    <Button size="sm" variant="ghost" className="w-full h-10 flex justify-start gap-3 rounded-lg px-3 text-sm">
                         <PiFileText />
                         Apply fake data
                     </Button>
@@ -107,7 +112,7 @@ export default function MenuActions({
             />
             <ConfirmationPopover
                 button={
-                    <Button size="sm" variant="ghost" className="w-full h-6 flex justify-start gap-3 px-2">
+                    <Button size="sm" variant="ghost" className="w-full h-10 flex justify-start gap-3 rounded-lg px-3 text-sm">
                         <PiFileX />
                         Clear resume
                     </Button>
@@ -118,11 +123,11 @@ export default function MenuActions({
             />
             <JsonButton contentStates={contentStates} />
 
-            <div className="my-2 border-b"></div>
+            <div className="my-3 border-b" />
 
             <ConfirmationPopover
                 button={
-                    <Button size="sm" variant="ghost" className="w-full h-6 text-destructive flex justify-start gap-3 px-2">
+                    <Button size="sm" variant="ghost" className="w-full h-10 text-destructive flex justify-start gap-3 rounded-lg px-3 text-sm hover:bg-destructive/10 hover:text-destructive">
                         <PiTrash />
                         Delete resume
                     </Button>

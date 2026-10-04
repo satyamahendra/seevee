@@ -4,7 +4,7 @@ services:
             context: .
             dockerfile: Dockerfile
             target: runner
-        container_name: svtyv-app
+        container_name: seevee-app
         restart: unless-stopped
         env_file:
             - .env
@@ -22,7 +22,7 @@ services:
             context: .
             dockerfile: Dockerfile
             target: migrator
-        container_name: svtyv-migrator
+        container_name: seevee-migrator
         env_file:
             - .env
         environment:
@@ -34,7 +34,7 @@ services:
 
     db:
         image: postgres:17-alpine
-        container_name: svtyv-db
+        container_name: seevee-db
         restart: unless-stopped
         env_file:
             - .env

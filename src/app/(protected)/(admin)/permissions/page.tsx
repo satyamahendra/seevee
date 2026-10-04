@@ -9,7 +9,7 @@ import PermissionList from "./components/permission-list"
 
 const Page = async () => {
     const hasPerm = await hasPermissions(["read permissions", "manage permissions"])
-    if (!hasPerm) return redirect("/home")
+    if (!hasPerm) return redirect("/resume")
 
     return (
         <AnimDiv className="flex flex-col gap-4 pb-4">

@@ -7,6 +7,7 @@ import {copyToClipboard} from "@/util/helpers/copyToClipboard"
 import {toast} from "sonner"
 import {PiBoxArrowDown, PiBoxArrowUp} from "react-icons/pi"
 import {useScreenSize} from "@/utils/hooks/useScreenSize"
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip"
 
 type AiButtonProps = {
     contentStates: ContentStatesType
@@ -49,17 +50,25 @@ export default function JsonButton({contentStates, className}: AiButtonProps) {
 
     return (
         <>
-            <div>
-                <Button size="sm" onClick={handleOpenModal} variant="ghost" className={className ?? "w-full h-6 flex justify-start gap-3 px-2"}>
-                    <PiBoxArrowDown />
-                    Import JSON
-                </Button>
-            </div>
-            <div>
-                <Button size="sm" onClick={handleExport} variant="ghost" className={className ?? "w-full h-6 flex justify-start gap-3 px-2"}>
-                    <PiBoxArrowUp />
-                    Export JSON
-                </Button>
+            <div className={isMobile ? "flex w-full gap-2" : "contents"}>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button size={isMobile ? "default" : "icon-sm"} onClick={handleOpenModal} variant="outline" className={isMobile ? "w-full justify-center gap-3" : "cursor-pointer"}>
+                            <PiBoxArrowDown className={isMobile ? "size-5" : undefined} />
+                            {isMobile && "Import JSON"}
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Import JSON</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button size={isMobile ? "default" : "icon-sm"} onClick={handleExport} variant="outline" className={isMobile ? "w-full justify-center gap-3" : "cursor-pointer"}>
+                            <PiBoxArrowUp className={isMobile ? "size-5" : undefined} />
+                            {isMobile && "Export JSON"}
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Export JSON</TooltipContent>
+                </Tooltip>
             </div>
 
             <Drawer swipeDirection={isMobile ? "down" : "right"} open={open} onOpenChange={setOpen}>
@@ -69,12 +78,7 @@ export default function JsonButton({contentStates, className}: AiButtonProps) {
                         <DrawerDescription>Import your resume from JSON format.</DrawerDescription>
                     </DrawerHeader>
                     <div className="flex-1 overflow-y-auto p-4 space-y-4 w-full">
-                        <Textarea
-                            id="input"
-                            value={String(jsonFormat)}
-                            onChange={(e) => setJsonFormat(e.target.value)}
-                            className="h-75"
-                        />
+                        <Textarea id="input" value={String(jsonFormat)} onChange={(e) => setJsonFormat(e.target.value)} className="h-75" />
                         <Button className="w-full" type="button" onClick={handleSaveJson}>
                             <div className="flex items-center gap-4">Save</div>
                         </Button>

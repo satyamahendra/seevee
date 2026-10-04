@@ -2,7 +2,20 @@
 
 import {Button} from "@/components/ui/button"
 import React, {useRef, useState} from "react"
-import {PiArrowSquareOut, PiCaretLeft, PiCopySimple, PiDownloadSimple, PiFileText, PiFileX, PiGear, PiLockKey, PiLockKeyOpen, PiTrash} from "react-icons/pi"
+import {
+    PiArrowSquareOut,
+    PiCaretLeft,
+    PiCopySimple,
+    PiDownloadSimple,
+    PiFileText,
+    PiFileX,
+    PiGear,
+    PiLockKey,
+    PiLockKeyFill,
+    PiLockKeyOpen,
+    PiLockKeyOpenFill,
+    PiTrash,
+} from "react-icons/pi"
 import AiButton from "./ai-button"
 import StructureButton from "./structure-button"
 import JsonButton from "./json-button"
@@ -14,7 +27,6 @@ import {redirect} from "next/navigation"
 import Link from "next/link"
 import ResumePrint from "./resume-print"
 import {useReactToPrint} from "react-to-print"
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import {Separator} from "@/components/ui/separator"
 import {Drawer, DrawerContent, DrawerHeader, DrawerTitle} from "@/components/ui/drawer"
 import ConfirmationPopover from "@/components/custom/confirmation-popover"
@@ -24,8 +36,10 @@ import {uuidToShort} from "@/util/helpers/shortenResumeID"
 import {togglePublicResume} from "../action"
 import {getBaseUrl} from "@/util/helpers/getBaseUrl"
 import {copyToClipboard} from "@/util/helpers/copyToClipboard"
-import MenuActions from "./menu-actions"
 import type {ResumeRow} from "../../action"
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip"
+import {normalizeText} from "@/util/helpers/normalizeText"
+import {TiLockClosed, TiLockOpen} from "react-icons/ti"
 
 type SettingsType = {
     contentStates: ContentStatesType
@@ -93,7 +107,7 @@ export default function SettingsContainer({contentStates, settingsStates, resume
                 <div className="flex items-center gap-3">
                     {res.data.isPublic ? <PiLockKeyOpen className="text-lg" /> : <PiLockKey className="text-lg" />}
                     {res.data.isPublic ? "Your resume is now public!" : "Your resume is now private!"}
-                </div>
+                </div>,
             )
         }
         setIsLoading(false)
@@ -105,120 +119,134 @@ export default function SettingsContainer({contentStates, settingsStates, resume
             <div className="flex items-center gap-3 ">
                 <PiCopySimple className="text-lg" />
                 Your resume link has been copied to clipboard!
-            </div>
+            </div>,
         )
-    }
-
-    const menuActionsProps = {
-        contentStates,
-        settingsStates,
-        resumeId,
-        handleAddContent,
-        handleDeleteContent,
-        isPublic,
-        isLoading,
-        handleTogglePublic,
-        handleCopyToClipboard,
-        handleApplyResumeData,
-        handleDeleteResume,
     }
 
     return (
         <>
             {/* desktop toolbar */}
             <div className="hidden sm:flex flex-wrap items-center gap-1.5">
-                <Link href="/resume">
-                    <Button size="icon" variant="ghost" className="h-8 w-8" aria-label="Back to resumes">
-                        <PiCaretLeft />
-                    </Button>
-                </Link>
+                <div className="flex gap-2">
+                    {fontStyles.map((fs) => (
+                        <Tooltip key={fs}>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    onClick={() => setSelectedFontStyle(fs)}
+                                    size="icon-sm"
+                                    className={`cursor-pointer font-${fs}`}
+                                    variant={selectedFontStyle === fs ? "secondary" : "outline"}
+                                    aria-label={`Change font style to ${fs}`}>
+                                    f
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>{normalizeText(fs)}</TooltipContent>
+                        </Tooltip>
+                    ))}
 
-                <Select value={selectedFontStyle} onValueChange={(value) => setSelectedFontStyle(value as FontStylesType)}>
-                    <SelectTrigger size="sm" className="h-8 gap-1 pr-1.5 text-xs">
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {fontStyles.map((fs) => (
-                            <SelectItem key={fs} value={fs}>
-                                {fs.charAt(0).toUpperCase() + fs.slice(1)}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+                    <Separator orientation="vertical" className="mx-1" />
 
-                <Separator orientation="vertical" className="h-6 mx-1" />
+                    <StructureButton
+                        contentStates={contentStates}
+                        handleAddContent={handleAddContent}
+                        handleDeleteContent={handleDeleteContent}
+                        className="h-8 flex items-center gap-1.5 px-2"
+                    />
 
-                <AiButton contentStates={contentStates} resumeId={resumeId} className="w-fit px-3" />
-                <StructureButton
-                    contentStates={contentStates}
-                    handleAddContent={handleAddContent}
-                    handleDeleteContent={handleDeleteContent}
-                    className="h-8 flex items-center gap-1.5 px-2"
-                />
-                <Button onClick={handlePrintResume} size="sm" variant="ghost" className="h-8 flex items-center gap-1.5 px-2">
-                    <PiDownloadSimple />
-                    Download
-                </Button>
+                    <Separator orientation="vertical" className="mx-1" />
 
-                <Separator orientation="vertical" className="h-6 mx-1" />
-
-                <div className="flex items-center gap-1.5">
-                    <Switch id="is-resume-public" className="scale-75" disabled={isLoading} checked={isPublic} onCheckedChange={handleTogglePublic} />
-                    <Label htmlFor="is-resume-public" className="text-xs">
-                        {isPublic ? "Public" : "Private"}
-                    </Label>
-                </div>
-                {isPublic && (
-                    <>
-                        <Link href={`/${uuidToShort(resumeId)}`} target="_blank">
-                            <Button size="sm" variant="ghost" className="h-8 flex items-center gap-1.5 px-2">
-                                <PiArrowSquareOut />
-                                Open
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button variant={isPublic ? "outline" : "secondary"} size="icon-sm" onClick={handleTogglePublic}>
+                                {isPublic ? <TiLockOpen /> : <TiLockClosed />}
                             </Button>
-                        </Link>
-                        <Button onClick={handleCopyToClipboard} size="sm" variant="ghost" className="h-8 flex items-center gap-1.5 px-2">
-                            <PiCopySimple /> Copy
-                        </Button>
-                    </>
-                )}
+                        </TooltipTrigger>
+                        <TooltipContent>{isPublic ? "Make it private" : "Make it public"}</TooltipContent>
+                    </Tooltip>
 
-                <Separator orientation="vertical" className="h-6 mx-1" />
+                    {isPublic && (
+                        <>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Link href={`/${uuidToShort(resumeId)}`} target="_blank">
+                                        <Button size="icon-sm" variant="outline" className="h-8 flex items-center gap-1.5 px-2">
+                                            <PiArrowSquareOut />
+                                        </Button>
+                                    </Link>
+                                </TooltipTrigger>
+                                <TooltipContent>View your resume</TooltipContent>
+                            </Tooltip>
 
-                <ConfirmationPopover
-                    button={
-                        <Button size="sm" variant="ghost" className="h-8 flex items-center gap-1.5 px-2">
-                            <PiFileText />
-                            Fake data
-                        </Button>
-                    }
-                    handleConfirm={() => handleApplyResumeData("fake")}
-                    description="Your resume will be overwritten by the fake data if you continue."
-                    title="Are you sure?"
-                />
-                <ConfirmationPopover
-                    button={
-                        <Button size="sm" variant="ghost" className="h-8 flex items-center gap-1.5 px-2">
-                            <PiFileX />
-                            Clear
-                        </Button>
-                    }
-                    handleConfirm={() => handleApplyResumeData("empty")}
-                    description="Your resume will be overwritten by the empty resume if you continue."
-                    title="Are you sure?"
-                />
-                <JsonButton contentStates={contentStates} className="h-8 flex items-center gap-1.5 px-2" />
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button onClick={handleCopyToClipboard} size="icon-sm" variant="outline" className="h-8 flex items-center gap-1.5 px-2">
+                                        <PiCopySimple />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Copy your resume link</TooltipContent>
+                            </Tooltip>
+                        </>
+                    )}
 
-                <ConfirmationPopover
-                    button={
-                        <Button size="sm" variant="ghost" className="h-8 text-destructive flex items-center gap-1.5 px-2">
-                            <PiTrash />
-                            Delete
-                        </Button>
-                    }
-                    handleConfirm={handleDeleteResume}
-                    description="Your resume will deleted forever if you continue."
-                    title="Are you sure?"
-                />
+                    <Separator orientation="vertical" className="mx-1" />
+
+                    <AiButton contentStates={contentStates} resumeId={resumeId} className="w-fit px-3" />
+                </div>
+
+                <div className="flex items-center gap-2 flex-1 justify-end">
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button onClick={handlePrintResume} size="icon-sm" variant="outline" className="cursor-pointer">
+                                <PiDownloadSimple />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Download</TooltipContent>
+                    </Tooltip>
+
+                    <Separator orientation="vertical" className="mx-1" />
+
+                    <ConfirmationPopover
+                        tooltip={"Apply Dummy data"}
+                        button={
+                            <Button size="icon-sm" variant="outline" className="cursor-pointer">
+                                <PiFileText />
+                            </Button>
+                        }
+                        handleConfirm={() => handleApplyResumeData("fake")}
+                        description="Your resume will be overwritten by the fake data if you continue."
+                        title="Are you sure?"
+                    />
+
+                    <ConfirmationPopover
+                        tooltip={"Clear resume"}
+                        button={
+                            <Button size="icon-sm" variant="outline" className="cursor-pointer">
+                                <PiFileX />
+                            </Button>
+                        }
+                        handleConfirm={() => handleApplyResumeData("empty")}
+                        description="Your resume will be overwritten by the empty resume if you continue."
+                        title="Are you sure?"
+                    />
+
+                    <Separator orientation="vertical" className="mx-1" />
+
+                    <JsonButton contentStates={contentStates} className="h-8 flex items-center gap-1.5 px-2" />
+
+                    <Separator orientation="vertical" className="mx-1" />
+
+                    <ConfirmationPopover
+                        tooltip={"Delete resume"}
+                        button={
+                            <Button size="icon-sm" variant="destructive" className="cursor-pointer">
+                                <PiTrash />
+                            </Button>
+                        }
+                        handleConfirm={handleDeleteResume}
+                        description="Your resume will deleted forever if you continue."
+                        title="Are you sure?"
+                    />
+                </div>
             </div>
 
             {/* mobile view */}
@@ -229,12 +257,92 @@ export default function SettingsContainer({contentStates, settingsStates, resume
                             <DrawerTitle>Resume Settings</DrawerTitle>
                         </DrawerHeader>
 
-                        <div className="space-y-2 overflow-y-auto p-4 pt-0 flex-1">
-                            <Button onClick={handlePrintResume} size="sm" variant="ghost" className="w-full h-6 flex justify-start gap-3 px-2">
-                                <PiDownloadSimple />
-                                Download resume
-                            </Button>
-                            <MenuActions {...menuActionsProps} showFont />
+                        <div className="space-y-4 overflow-y-auto p-4 pt-0 flex-1">
+                            <div className="flex gap-4  ">
+                                {fontStyles.map((fs) => (
+                                    <Button
+                                        key={fs}
+                                        onClick={() => setSelectedFontStyle(fs)}
+                                        size="default"
+                                        className={`cursor-pointer flex-1 font-${fs}`}
+                                        variant={selectedFontStyle === fs ? "secondary" : "outline"}
+                                        aria-label={`Change font style to ${fs}`}>
+                                        {normalizeText(fs)}
+                                    </Button>
+                                ))}
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <StructureButton
+                                    contentStates={contentStates}
+                                    handleAddContent={handleAddContent}
+                                    handleDeleteContent={handleDeleteContent}
+                                    className="h-8 flex items-center gap-1.5 px-2"
+                                />
+
+                                <Button onClick={handlePrintResume} variant="outline" className="w-full justify-center gap-3">
+                                    <PiDownloadSimple className="size-5" />
+                                    Download resume
+                                </Button>
+
+                                <Button onClick={handleTogglePublic} disabled={isLoading} variant="outline" className="w-full justify-center gap-3">
+                                    {isPublic ? <TiLockOpen className="size-5" /> : <TiLockClosed className="size-5" />}
+                                    {isPublic ? "Make resume private" : "Make resume public"}
+                                </Button>
+
+                                {isPublic && (
+                                    <>
+                                        <Link href={`/${uuidToShort(resumeId)}`} target="_blank" className="block w-full">
+                                            <Button variant="outline" className="w-full justify-center gap-3">
+                                                <PiArrowSquareOut className="size-5" />
+                                                View your resume
+                                            </Button>
+                                        </Link>
+                                        <Button onClick={handleCopyToClipboard} variant="outline" className="w-full justify-center gap-3">
+                                            <PiCopySimple className="size-5" />
+                                            Copy resume link
+                                        </Button>
+                                    </>
+                                )}
+
+                                <ConfirmationPopover
+                                    button={
+                                        <Button variant="outline" className="w-full justify-center gap-3">
+                                            <PiFileText className="size-5" />
+                                            Apply dummy data
+                                        </Button>
+                                    }
+                                    handleConfirm={() => handleApplyResumeData("fake")}
+                                    description="Your resume will be overwritten by the fake data if you continue."
+                                    title="Are you sure?"
+                                />
+
+                                <ConfirmationPopover
+                                    button={
+                                        <Button variant="outline" className="w-full justify-center gap-3">
+                                            <PiFileX className="size-5" />
+                                            Clear resume
+                                        </Button>
+                                    }
+                                    handleConfirm={() => handleApplyResumeData("empty")}
+                                    description="Your resume will be overwritten by the empty resume if you continue."
+                                    title="Are you sure?"
+                                />
+
+                                <JsonButton contentStates={contentStates} className="w-full" />
+
+                                <ConfirmationPopover
+                                    button={
+                                        <Button variant="destructive" className="w-full justify-center gap-3">
+                                            <PiTrash className="size-5" />
+                                            Delete resume
+                                        </Button>
+                                    }
+                                    handleConfirm={handleDeleteResume}
+                                    description="Your resume will deleted forever if you continue."
+                                    title="Are you sure?"
+                                />
+                            </div>
                         </div>
                     </DrawerContent>
                 </Drawer>

@@ -12,6 +12,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import {PiWarningCircle} from "react-icons/pi"
+import {Tooltip, TooltipContent, TooltipTrigger} from "../ui/tooltip"
 
 type ConfirmationPopoverProps = {
     button: React.ReactElement
@@ -19,6 +20,7 @@ type ConfirmationPopoverProps = {
     description?: string
     side?: "top" | "right" | "bottom" | "left"
     handleConfirm: () => void
+    tooltip?: React.ReactNode
 }
 
 export default function ConfirmationPopover({
@@ -26,10 +28,20 @@ export default function ConfirmationPopover({
     title = "Are you sure?",
     description = "Are you sure you are going to do this?",
     handleConfirm,
+    tooltip,
 }: ConfirmationPopoverProps) {
     return (
         <AlertDialog>
-            <AlertDialogTrigger asChild>{button}</AlertDialogTrigger>
+            {tooltip ? (
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <AlertDialogTrigger asChild>{button}</AlertDialogTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent>{tooltip}</TooltipContent>
+                </Tooltip>
+            ) : (
+                <AlertDialogTrigger asChild>{button}</AlertDialogTrigger>
+            )}
             <AlertDialogContent>
                 <AlertDialogHeader className="space-y-2">
                     <AlertDialogTitle className="flex flex-col justify-center items-center w-full gap-2">

@@ -86,7 +86,7 @@ export default function ResumeDisplay({
             <section className={`h-full w-full flex flex-col gap-2 font-${selectedFontStyle} min-h-0 flex-1`}>
                 <div className="pr-2 h-full w-full bg-primary-foreground overflow-auto rounded-xl pl-3 py-3 border">
                     <ScrollArea className="h-full w-full pr-4">
-                        <div className="space-y-4 w-full max-sm:[zoom:0.85]">
+                        <div className="space-y-4 max-sm:zoom-[0.85]">
                             {content.map((con, index) => {
                                 return (
                                     <Fragment key={index}>
@@ -139,7 +139,7 @@ export default function ResumeDisplay({
                         </div>
                     </ScrollArea>
                 </div>
-                <div className="text-xs font-[family-name:var(--font-geist-sans)] flex justify-center gap-2 text-muted-foreground h-[20px]">
+                <div className="text-xs font-(family-name:--font-geist-sans) flex justify-center gap-2 text-muted-foreground h-5">
                     <AnimatePresence mode="wait">
                         {!isReady ? (
                             <motion.div key="syncing" initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}} className="flex items-center gap-2">

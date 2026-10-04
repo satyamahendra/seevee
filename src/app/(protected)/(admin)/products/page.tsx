@@ -20,7 +20,7 @@ type PageProps = {
 
 const Page = async ({searchParams}: PageProps) => {
     const hasPerm = await hasPermissions(["read products", "manage products"])
-    if (!hasPerm) return redirect("/home")
+    if (!hasPerm) return redirect("/resume")
 
     const {page, search} = await searchParams
     const pageNum = page ? parseInt(page) : 1
