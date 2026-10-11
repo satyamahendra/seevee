@@ -11,7 +11,7 @@ import StructureButton from "./structure-button"
 import ConfirmationPopover from "@/components/custom/confirmation-popover"
 import {Switch} from "@/components/ui/switch"
 import {Label} from "@/components/ui/label"
-import {uuidToShort} from "@/util/helpers/shortenResumeID"
+import {uuidToShort} from "@/utils/helpers/shortenResumeID"
 import JsonButton from "./json-button"
 
 type MenuActionsProps = {

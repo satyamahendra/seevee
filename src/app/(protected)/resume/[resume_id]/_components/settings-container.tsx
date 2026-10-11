@@ -32,13 +32,13 @@ import {Drawer, DrawerContent, DrawerHeader, DrawerTitle} from "@/components/ui/
 import ConfirmationPopover from "@/components/custom/confirmation-popover"
 import {Switch} from "@/components/ui/switch"
 import {Label} from "@/components/ui/label"
-import {uuidToShort} from "@/util/helpers/shortenResumeID"
+import {uuidToShort} from "@/utils/helpers/shortenResumeID"
 import {togglePublicResume} from "../action"
-import {getBaseUrl} from "@/util/helpers/getBaseUrl"
-import {copyToClipboard} from "@/util/helpers/copyToClipboard"
+import {getBaseUrl} from "@/utils/helpers/getBaseUrl"
+import {copyToClipboard} from "@/utils/helpers/copyToClipboard"
 import type {ResumeRow} from "../../action"
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip"
-import {normalizeText} from "@/util/helpers/normalizeText"
+import {normalizeText} from "@/utils/helpers/normalizeText"
 import {TiLockClosed, TiLockOpen} from "react-icons/ti"
 
 type SettingsType = {

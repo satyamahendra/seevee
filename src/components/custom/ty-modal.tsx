@@ -2,7 +2,7 @@
 
 import {Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog"
 import {Button} from "@/components/ui/button"
-import {useUpdateSearchParams} from "@/util/hooks/useUpSearchParams"
+import {useUpdateSearchParams} from "@/utils/hooks/useUpSearchParams"
 import {cn} from "@/lib/utils"
 import {CheckCircle2, Heart, Sparkles} from "lucide-react"
 import {motion} from "framer-motion"

@@ -25,7 +25,7 @@ export default function ChooseContentButton({children, handleAddContent}: Choose
     return (
         <>
             {childWithClick}
-            <Drawer swipeDirection={isMobile ? "down" : "right"} open={isOpen} onOpenChange={setIsOpen}>
+            <Drawer swipeDirection={isMobile ? "down" : "left"} open={isOpen} onOpenChange={setIsOpen}>
                 <DrawerContent className="[--drawer-content-width:min(100dvw,48rem)]">
                     <DrawerHeader>
                         <DrawerTitle className="flex flex-col items-center gap-4">Choose Content</DrawerTitle>

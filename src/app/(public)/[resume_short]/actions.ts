@@ -2,7 +2,7 @@
 
 import {authServer} from "@/lib/auth-server"
 import prisma from "@/lib/prisma/client"
-import {shortToUuid} from "@/util/helpers/shortenResumeID"
+import {shortToUuid} from "@/utils/helpers/shortenResumeID"
 
 export async function getResumeByHash(resume_short: string) {
     try {

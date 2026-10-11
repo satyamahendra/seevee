@@ -1,7 +1,7 @@
 import {authServer} from "@/lib/auth-server"
 import prisma from "@/lib/prisma/client"
 import {gemini, geminiModel} from "@/lib/gemini/gemini"
-import {generatePrompt} from "@/util/helpers/generatePrompt"
+import {generatePrompt} from "@/utils/helpers/generatePrompt"
 import {aiRequestSchema, resumeSchema} from "@/lib/gemini/resume-schema"
 
 export async function POST(request: Request) {

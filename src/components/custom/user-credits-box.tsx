@@ -3,6 +3,7 @@
 import React from "react"
 import Link from "next/link"
 import {PiPlusBold} from "react-icons/pi"
+import {Button} from "../ui/button"
 
 type UserCreditsBoxProps = {
     credits: number
@@ -10,14 +11,16 @@ type UserCreditsBoxProps = {
 
 export default function UserCreditsBox({credits}: UserCreditsBoxProps) {
     return (
-        <Link href="/#pricing" className="cursor-pointer h-8 flex items-center text-xs border rounded-md bg-primary-foreground">
-            <div className="border-r px-2 py-1 flex items-center gap-1 font-semibold">
-                <PiPlusBold /> Get Credits
-            </div>
-            <div className="px-2 py-1 flex items-center justify-center gap-1 font-semibold">
-                {credits}
-                <div className="w-1.5 h-1.5 rotate-45 bg-primary"></div>
-            </div>
+        <Link href="/#pricing">
+            <Button variant="outline" className="cursor-pointer" size="sm">
+                <div className="border-r px-2 py-1 flex items-center gap-1 font-semibold">
+                    <PiPlusBold /> Get Credits
+                </div>
+                <div className="px-2 py-1 flex items-center justify-center gap-1 font-semibold">
+                    {credits}
+                    <div className="w-1.5 h-1.5 rotate-45 bg-primary"></div>
+                </div>
+            </Button>
         </Link>
     )
 }

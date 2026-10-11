@@ -2,7 +2,7 @@
 
 import React from "react"
 import {Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious} from "@/components/ui/pagination"
-import {useUpdateSearchParams} from "@/util/hooks/useUpSearchParams"
+import {useUpdateSearchParams} from "@/utils/hooks/useUpSearchParams"
 import {useSearchParams} from "next/navigation"
 
 type MetadataType = {

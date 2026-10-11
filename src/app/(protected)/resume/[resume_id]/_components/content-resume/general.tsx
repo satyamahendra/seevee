@@ -1,4 +1,4 @@
-﻿import React from "react"
+import React from "react"
 import {
     GeneralArrayKeys,
     GeneralContentType,
@@ -9,7 +9,7 @@ import {
     HandleDeleteSubContentType,
     HandleDirectEditContentType,
 } from "../../_static/type"
-import {createFallbackKey} from "@/util/helpers/createFallbackKey"
+import {createFallbackKey} from "@/utils/helpers/createFallbackKey"
 import {Textarea} from "@/components/ui/textarea"
 import {Button} from "@/components/ui/button"
 import DateInput from "@/components/custom/input/date-input"

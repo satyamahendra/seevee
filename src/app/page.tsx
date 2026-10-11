@@ -4,7 +4,7 @@ import {Button} from "@/components/ui/button"
 import {Badge} from "@/components/ui/badge"
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion"
 import CheckoutButton from "@/components/custom/landing/checkout-button"
-import {formatNumberWithCommas} from "@/util/helpers/formatNumberWithCommas"
+import {formatNumberWithCommas} from "@/utils/helpers/formatNumberWithCommas"
 import {PiCoins, PiCube, PiFileText, PiMagicWand, PiShareNetwork, PiSparkle} from "react-icons/pi"
 import Link from "next/link"
 

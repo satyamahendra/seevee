@@ -1,4 +1,4 @@
-﻿import React from "react"
+import React from "react"
 import {
     HandleAddMultipleInputType,
     HandleChangeContentType,
@@ -8,7 +8,7 @@ import {
     HeaderContentType,
 } from "../../_static/type"
 import {PiEnvelope, PiLink, PiMapPin, PiPencil, PiPhone, PiTrash} from "react-icons/pi"
-import {linkIcons} from "@/util/constants/linkIcons"
+import {linkIcons} from "@/utils/constants/linkIcons"
 import {Input} from "@/components/ui/input"
 import {Button} from "@/components/ui/button"
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover"

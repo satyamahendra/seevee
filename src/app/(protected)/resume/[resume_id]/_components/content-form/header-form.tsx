@@ -5,8 +5,8 @@ import {Input} from "@/components/ui/input"
 import {PiLink, PiPlus, PiTrash} from "react-icons/pi"
 import {Button} from "@/components/ui/button"
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover"
-import {linkIcons} from "@/util/constants/linkIcons"
-import {createFallbackKey} from "@/util/helpers/createFallbackKey"
+import {linkIcons} from "@/utils/constants/linkIcons"
+import {createFallbackKey} from "@/utils/helpers/createFallbackKey"
 
 type HeaderFormProps = {
     data: HeaderContentType

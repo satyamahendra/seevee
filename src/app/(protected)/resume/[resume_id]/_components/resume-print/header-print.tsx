@@ -3,7 +3,7 @@
 import React from "react"
 import {PiEnvelope, PiLink, PiMapPin, PiPhone} from "react-icons/pi"
 import {HeaderContentType} from "../../_static/type"
-import {linkIcons} from "@/util/constants/linkIcons"
+import {linkIcons} from "@/utils/constants/linkIcons"
 
 type HeaderPrint = {
     data: HeaderContentType

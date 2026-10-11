@@ -2,7 +2,7 @@
 
 import React, {useEffect} from "react"
 import {Button} from "@/components/ui/button"
-import {useUpdateSearchParams} from "@/util/hooks/useUpSearchParams"
+import {useUpdateSearchParams} from "@/utils/hooks/useUpSearchParams"
 import {usePathname, useSearchParams} from "next/navigation"
 import AnimatedContainer from "@/components/custom/animated-container"
 

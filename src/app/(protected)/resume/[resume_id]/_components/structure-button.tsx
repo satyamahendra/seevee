@@ -1,10 +1,10 @@
-﻿import {Button} from "@/components/ui/button"
+import {Button} from "@/components/ui/button"
 import {PiDotsSixVertical, PiPlus, PiSliders, PiTrash} from "react-icons/pi"
 import {ContentStateType, ContentStatesType, GeneralType, HandleAddContentType, HandleDeleteContentType} from "../_static/type"
 import {Reorder, motion} from "motion/react"
 import ChooseContentButton from "./choose-content-button"
 import ResumeDrawer from "@/components/custom/resume-drawer"
-import {createFallbackKey} from "@/util/helpers/createFallbackKey"
+import {createFallbackKey} from "@/utils/helpers/createFallbackKey"
 import {useScreenSize} from "@/utils/hooks/useScreenSize"
 
 type StructureButtonProps = {

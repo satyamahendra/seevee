@@ -17,7 +17,7 @@ import {
     SkillType,
 } from "../_static/type"
 import {allContentInitials, generalInitial, linkInitial, skillInitial} from "../_static/var"
-import {generateRandomNumber} from "@/util/helpers/generateRandomNumber"
+import {generateRandomNumber} from "@/utils/helpers/generateRandomNumber"
 import {motion} from "motion/react"
 import SettingsContainer from "./settings-container"
 import type {ResumeRow} from "../../action"

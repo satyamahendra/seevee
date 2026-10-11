@@ -3,7 +3,7 @@ import {Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle} fro
 import {Textarea} from "@/components/ui/textarea"
 import React, {useState} from "react"
 import {ContentStatesType, ContentStateType} from "../_static/type"
-import {copyToClipboard} from "@/util/helpers/copyToClipboard"
+import {copyToClipboard} from "@/utils/helpers/copyToClipboard"
 import {toast} from "sonner"
 import {PiBoxArrowDown, PiBoxArrowUp} from "react-icons/pi"
 import {useScreenSize} from "@/utils/hooks/useScreenSize"

@@ -6,9 +6,9 @@ import {Label} from "@/components/ui/label"
 import {Input} from "@/components/ui/input"
 import {Button} from "@/components/ui/button"
 import {PiCircleFill, PiPlus, PiPlusBold, PiTrash} from "react-icons/pi"
-import {createFallbackKey} from "@/util/helpers/createFallbackKey"
+import {createFallbackKey} from "@/utils/helpers/createFallbackKey"
 import {linkInitial} from "../../_static/var"
-import {generateRandomNumber} from "@/util/helpers/generateRandomNumber"
+import {generateRandomNumber} from "@/utils/helpers/generateRandomNumber"
 
 type GeneralFormType = {
     data: GeneralContentType
