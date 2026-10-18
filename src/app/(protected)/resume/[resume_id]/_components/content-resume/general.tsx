@@ -18,6 +18,8 @@ import {PiCircleFill, PiPencil, PiTrash} from "react-icons/pi"
 import GeneralForm from "../content-form/general-form"
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover"
 import {Input} from "@/components/ui/input"
+import {useScreenSize} from "@/utils/hooks/useScreenSize"
+import DrawerDeleteButton from "../drawer-delete-button"
 
 type GeneralProps = {
     data: GeneralContentType
@@ -40,6 +42,8 @@ export default function General({
     handleDirectEditContent,
     handleDeleteContent,
 }: GeneralProps) {
+    const {isMobile} = useScreenSize()
+
     const handleAddListItem = (genIndex: number, type: GeneralArrayKeys) => {
         const thisGeneral = data.general[genIndex]
         const modifiedGeneral = {...thisGeneral, [type]: [...thisGeneral?.[type], ""]}
@@ -88,7 +92,7 @@ export default function General({
             <h2 className="mb-1">
                 <div className="flex items-center">
                     <input
-                        className="w-fit px-2 field-sizing-content text-base bg-primary-foreground rounded-lg font-[600] group-hover:bg-muted border-none shadow-none outline-none focus:bg-muted focus:border-muted duration-200 py-0.5 placeholder:text-muted-foreground"
+                        className="w-fit px-2 field-sizing-content text-base bg-primary-foreground rounded-lg font-semibold group-hover:bg-muted border-none shadow-none outline-none focus:border-muted duration-200 py-0.5 placeholder:text-muted-foreground"
                         type="text"
                         value={data?.title || ""}
                         id="title"
@@ -108,12 +112,34 @@ export default function General({
                 {data?.general?.length > 0 &&
                     data?.general?.map((gen, genIndex) => {
                         const fallBackKey = createFallbackKey()
-                        return (
-                            <li key={genIndex ?? fallBackKey} className="relative group duration-200 hover:bg-muted rounded-lg pt-2 pr-2">
+                        const form = (
+                            <GeneralForm
+                                data={data}
+                                gen={gen}
+                                index={index}
+                                subIndex={genIndex}
+                                handleChangeSubContent={handleChangeSubContent}
+                                handleDirectEditContent={handleDirectEditContent}
+                            />
+                        )
+
+                        const detail = (
+                            <>
+                                {form}
+                                <DrawerDeleteButton
+                                    handleConfirm={() => handleDeleteSubContent("general", index, genIndex)}
+                                    label="Delete item"
+                                    description="This item will be removed from your resume."
+                                />
+                            </>
+                        )
+
+                        const liInner = (
+                            <>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center">
                                         <input
-                                            className="w-fit px-2 field-sizing-content bg-primary-foreground rounded-lg font-[500] group-hover:bg-muted border-none shadow-none outline-none text-sm focus:bg-muted focus:border-muted duration-200 placeholder:text-muted-foreground"
+                                            className="w-fit px-2 field-sizing-content bg-primary-foreground rounded-lg font-medium group-hover:bg-muted border-none shadow-none outline-none text-sm focus:border-muted duration-200 placeholder:text-muted-foreground"
                                             type="text"
                                             value={gen?.title || ""}
                                             id="title"
@@ -131,7 +157,7 @@ export default function General({
                                                                 <div>{link?.name || "Your link"}</div>
                                                             </div>
                                                         </PopoverTrigger>
-                                                        <PopoverContent className="w-[200px] p-2 relative">
+                                                        <PopoverContent className="w-50 p-2 relative">
                                                             <div className="flex gap-2 flex-col">
                                                                 <Input
                                                                     className="h-8 bg-muted placeholder-muted outline-none"
@@ -177,7 +203,7 @@ export default function General({
 
                                 <div className="flex items-center justify-between text-xs">
                                     <input
-                                        className="w-fit px-2 text-muted-foreground italic field-sizing-content bg-primary-foreground group-hover:bg-muted border-none shadow-none outline-none text-xs focus:bg-muted focus:border-muted duration-200 placeholder:text-muted-foreground pr-1"
+                                        className="w-fit px-2 text-muted-foreground italic field-sizing-content bg-primary-foreground group-hover:bg-muted border-none shadow-none outline-none text-xs focus:border-muted duration-200 pr-1"
                                         type="text"
                                         value={gen?.subtitle || ""}
                                         id="subtitle"
@@ -190,7 +216,7 @@ export default function General({
                                         <input
                                             type="text"
                                             placeholder="City"
-                                            className="field-sizing-content bg-primary-foreground rounded-l-md border-none group-hover:bg-muted shadow-none outline-none text-xs focus:bg-muted focus:border-muted duration-200 pl-2 py-0.5 placeholder:text-muted-foreground"
+                                            className="field-sizing-content bg-primary-foreground rounded-l-md border-none group-hover:bg-muted shadow-none outline-none text-xs focus:border-muted duration-200 pl-2 py-0.5 placeholder:text-muted-foreground"
                                             value={gen?.city || ""}
                                             id="city"
                                             name="city"
@@ -200,7 +226,7 @@ export default function General({
                                         <input
                                             type="text"
                                             placeholder="Country"
-                                            className="field-sizing-content bg-primary-foreground rounded-r-md ml-1 border-none group-hover:bg-muted shadow-none outline-none text-xs focus:bg-muted focus:border-muted duration-200 py-0.5 placeholder:text-muted-foreground"
+                                            className="field-sizing-content bg-primary-foreground rounded-r-md ml-1 border-none group-hover:bg-muted shadow-none outline-none text-xs focus:border-muted duration-200 py-0.5 placeholder:text-muted-foreground"
                                             value={gen?.country || ""}
                                             id="country"
                                             name="country"
@@ -289,45 +315,57 @@ export default function General({
                                     +
                                 </Button>
 
+                            </>
+                        )
+
+                        const liClass = "relative group duration-200 hover:bg-muted rounded-lg pt-2 pr-2"
+
+                        if (isMobile)
+                            return (
+                                <ResumeDrawer
+                                    key={genIndex ?? fallBackKey}
+                                    title={data?.title || "Item"}
+                                    description="Make changes to your data here. Simply exit and your data will stay"
+                                    trigger={<li className={`${liClass} cursor-pointer`}>{liInner}</li>}>
+                                    {detail}
+                                </ResumeDrawer>
+                            )
+
+                        return (
+                            <li key={genIndex ?? fallBackKey} className={liClass}>
+                                {liInner}
                                 <div className="absolute -top-7 rounded-sm gap-1 right-0 group-hover:bg-muted p-1 flex opacity-0 group-hover:opacity-100 duration-200">
-                                        <ResumeDrawer
-                                            title={
-                                                <input
-                                                    className="w-fit field-sizing-content text-base bg-primary-foreground rounded-lg font-[600] group-hover:bg-muted border-none shadow-none outline-none focus:bg-muted focus:border-muted duration-200 py-0.5 placeholder:text-muted-foreground"
-                                                    type="text"
-                                                    value={data?.title || ""}
-                                                    id="title"
-                                                    name="title"
-                                                    onChange={(e) => handleChangeContent(e, index)}
-                                                    placeholder="Title"
-                                                />
-                                            }
-                                            description="Make changes to your data here. Simply exit and your data will stay"
-                                            trigger={
-                                                <Button size="icon" variant="outline" className="w-6 h-6">
-                                                    <PiPencil />
-                                                </Button>
-                                            }>
-                                            <GeneralForm
-                                                data={data}
-                                                gen={gen}
-                                                index={index}
-                                                subIndex={genIndex}
-                                                handleChangeSubContent={handleChangeSubContent}
-                                                handleDirectEditContent={handleDirectEditContent}
+                                    <ResumeDrawer
+                                        title={
+                                            <input
+                                                className="w-fit field-sizing-content text-base bg-primary-foreground rounded-lg font-semibold group-hover:bg-muted border-none shadow-none outline-none focus:border-muted duration-200 py-0.5 placeholder:text-muted-foreground"
+                                                type="text"
+                                                value={data?.title || ""}
+                                                id="title"
+                                                name="title"
+                                                onChange={(e) => handleChangeContent(e, index)}
+                                                placeholder="Title"
                                             />
-                                        </ResumeDrawer>
-                                        <Button
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                handleDeleteSubContent("general", index, genIndex)
-                                            }}
-                                            size="icon"
-                                            variant="outline"
-                                            className="w-6 h-6">
-                                            <PiTrash />
-                                        </Button>
-                                    </div>
+                                        }
+                                        description="Make changes to your data here. Simply exit and your data will stay"
+                                        trigger={
+                                            <Button size="icon" variant="outline" className="w-6 h-6">
+                                                <PiPencil />
+                                            </Button>
+                                        }>
+                                        {detail}
+                                    </ResumeDrawer>
+                                    <Button
+                                        onClick={(e) => {
+                                            e.stopPropagation()
+                                            handleDeleteSubContent("general", index, genIndex)
+                                        }}
+                                        size="icon"
+                                        variant="outline"
+                                        className="w-6 h-6">
+                                        <PiTrash />
+                                    </Button>
+                                </div>
                             </li>
                         )
                     })}

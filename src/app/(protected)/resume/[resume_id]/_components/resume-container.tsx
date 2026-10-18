@@ -63,8 +63,7 @@ export default function ResumeContainer({resumeId, resume, resumeData}: ResumeCo
 
     // subcontent
     type SubContentArray = (LinkType | SkillType | GeneralType)[]
-    const toArray = (con: ContentStateType, type: "links" | "skill" | "general"): SubContentArray =>
-        (con as unknown as {[k: string]: SubContentArray})[type] ?? []
+    const toArray = (con: ContentStateType, type: "links" | "skill" | "general"): SubContentArray => (con as unknown as {[k: string]: SubContentArray})[type] ?? []
 
     const handleChangeSubContent: HandleChangeSubContentType = (e, type, index, subIndex) => {
         const {name, value} = e.target
@@ -108,13 +107,10 @@ export default function ResumeContainer({resumeId, resume, resumeData}: ResumeCo
     }
 
     return (
-        <motion.div
-            initial={{opacity: 0, y: 12}}
-            animate={{opacity: 1, y: 0}}
-            transition={{bounce: 0}}
-            className="flex w-full flex-col justify-center h-full gap-4">
+        <motion.div initial={{opacity: 0, y: 12}} animate={{opacity: 1, y: 0}} transition={{bounce: 0}} className="flex w-full justify-center h-full gap-6">
             <div className="hidden">
                 <div className="font-sans"></div>
+                <div className="font-(family-name:--font-geist-sans)"></div>
                 <div className="font-serif"></div>
                 <div className="font-mono"></div>
             </div>

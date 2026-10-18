@@ -12,6 +12,8 @@ import {Button} from "@/components/ui/button"
 import {PiPencil, PiTrash} from "react-icons/pi"
 import ResumeDrawer from "@/components/custom/resume-drawer"
 import SkillForm from "../content-form/skill-form"
+import {useScreenSize} from "@/utils/hooks/useScreenSize"
+import DrawerDeleteButton from "../drawer-delete-button"
 
 type SkillProps = {
     data: SkillContentType
@@ -33,6 +35,8 @@ export default function Skill({
     handleDirectEditContent,
     handleDeleteContent,
 }: SkillProps) {
+    const {isMobile} = useScreenSize()
+
     const handleAddListItem = (skillIndex: number) => {
         const thisSkill = data.skill[skillIndex]
         const modifiedSkill = {...thisSkill, items: [...thisSkill?.items, ""]}
@@ -87,55 +91,99 @@ export default function Skill({
 
             <ul className="text-xs text-justify">
                 {data?.skill?.length > 0 &&
-                    data.skill.map((sk, skillIndex) => (
-                        <li key={skillIndex} className="relative flex gap-2 h-full break-inside-avoid p-2 group/item hover:bg-muted hover:rounded-lg duration-200">
-                            {/* Skill Group Name */}
-                            <div className="font-[500] flex gap-2">
-                                <input
-                                    className="h-fit w-20 field-sizing-content text-xs bg-primary-foreground rounded-lg font-[500] group-hover/item:bg-muted border-none shadow-none outline-none focus:bg-muted focus:border-muted duration-200 placeholder:text-muted-foreground"
-                                    type="text"
-                                    value={sk?.name || ""}
-                                    name="name"
-                                    onChange={(e) => handleChangeSubContent(e, "skill", conIndex, skillIndex)}
-                                    placeholder="Skill group"
+                    data.skill.map((sk, skillIndex) => {
+                        const form = (
+                            <SkillForm
+                                data={data}
+                                skill={sk}
+                                index={conIndex}
+                                subIndex={skillIndex}
+                                handleChangeSubContent={handleChangeSubContent}
+                                handleDirectEditContent={handleDirectEditContent}
+                            />
+                        )
+
+                        const detail = (
+                            <>
+                                {form}
+                                <DrawerDeleteButton
+                                    handleConfirm={() => handleDeleteSubContent("skill", conIndex, skillIndex)}
+                                    label="Delete skill group"
+                                    description="This skill group will be removed from your resume."
                                 />
-                            </div>
+                            </>
+                        )
 
-                            {/* Skill Items */}
-                            <ul className="flex gap-1 flex-wrap pl-2">
-                                {sk?.items?.length > 0 &&
-                                    sk.items.map((item, itemIndex) => (
-                                        <li key={itemIndex} className="flex relative items-center group/tag">
-                                            <input
-                                                type="text"
-                                                className="px-2 border bg-muted rounded-md w-fit field-sizing-content"
-                                                onChange={(e) => handleChangeListItem(e, skillIndex, itemIndex)}
-                                                placeholder="Tags"
-                                                value={item || ""}
-                                                onKeyDown={(e) => e.key === "Enter" && handleAddListItem(skillIndex)}
-                                            />
+                        const liInner = (
+                            <>
+                                {/* Skill Group Name */}
+                                <div className="font-[500] flex gap-2">
+                                    <input
+                                        className="h-fit w-20 field-sizing-content text-xs bg-primary-foreground rounded-lg font-[500] group-hover/item:bg-muted border-none shadow-none outline-none focus:bg-muted focus:border-muted duration-200 placeholder:text-muted-foreground"
+                                        type="text"
+                                        value={sk?.name || ""}
+                                        name="name"
+                                        onChange={(e) => handleChangeSubContent(e, "skill", conIndex, skillIndex)}
+                                        placeholder="Skill group"
+                                    />
+                                </div>
 
-                                            <Button
-                                                variant="outline"
-                                                size="icon"
-                                                onClick={() => handleDeleteListItem(skillIndex, itemIndex)}
-                                                className="w-3 h-3 -top-1.5 -right-0.5 flex items-center justify-center p-1 absolute opacity-0 group-hover/tag:opacity-100 duration-200 rounded-sm">
-                                                &times;
-                                            </Button>
+                                {/* Skill Items */}
+                                <ul className="flex gap-1 flex-wrap pl-2">
+                                    {sk?.items?.length > 0 &&
+                                        sk.items.map((item, itemIndex) => (
+                                            <li key={itemIndex} className="flex relative items-center group/tag">
+                                                <input
+                                                    type="text"
+                                                    className="px-2 border bg-muted rounded-md w-fit field-sizing-content"
+                                                    onChange={(e) => handleChangeListItem(e, skillIndex, itemIndex)}
+                                                    placeholder="Tags"
+                                                    value={item || ""}
+                                                    onKeyDown={(e) => e.key === "Enter" && handleAddListItem(skillIndex)}
+                                                />
+
+                                                <Button
+                                                    variant="outline"
+                                                    size="icon"
+                                                    onClick={() => handleDeleteListItem(skillIndex, itemIndex)}
+                                                    className="w-3 h-3 -top-1.5 -right-0.5 flex items-center justify-center p-1 absolute opacity-0 group-hover/tag:opacity-100 duration-200 rounded-sm">
+                                                    &times;
+                                                </Button>
+                                            </li>
+                                        ))}
+
+                                    {/* Add Tag Button */}
+                                    <Button
+                                        onClick={() => handleAddListItem(skillIndex)}
+                                        variant="outline"
+                                        className="w-4 h-4 items-center group-hover/item:flex hidden duration-200 aspect-square p-0 rounded-sm">
+                                        +
+                                    </Button>
+                                </ul>
+                            </>
+                        )
+
+                        if (isMobile)
+                            return (
+                                <ResumeDrawer
+                                    key={skillIndex}
+                                    title={`${sk.name} Skill group`}
+                                    description="Make changes to your data here. Simply exit and your data will stay"
+                                    trigger={
+                                        <li className="relative flex gap-2 h-full break-inside-avoid p-2 group/item hover:bg-muted hover:rounded-lg duration-200 cursor-pointer">
+                                            {liInner}
                                         </li>
-                                    ))}
+                                    }>
+                                    {detail}
+                                </ResumeDrawer>
+                            )
 
-                                {/* Add Tag Button */}
-                                <Button
-                                    onClick={() => handleAddListItem(skillIndex)}
-                                    variant="outline"
-                                    className="w-4 h-4 items-center group-hover/item:flex hidden duration-200 aspect-square p-0 rounded-sm">
-                                    +
-                                </Button>
-                            </ul>
+                        return (
+                            <li key={skillIndex} className="relative flex gap-2 h-full break-inside-avoid p-2 group/item hover:bg-muted hover:rounded-lg duration-200">
+                                {liInner}
 
-                            {/* Edit + Delete Skill Group */}
-<div className="absolute -top-7 rounded-sm gap-1 right-0 group-hover:bg-muted p-1 flex opacity-0 group-hover:opacity-100 duration-200">
+                                {/* Edit + Delete Skill Group */}
+                                <div className="absolute -top-7 rounded-sm gap-1 right-0 group-hover/item:bg-muted p-1 flex opacity-0 group-hover/item:opacity-100 duration-200">
                                     <ResumeDrawer
                                         title={`${sk.name} Skill group`}
                                         description="Make changes to your data here. Simply exit and your data will stay"
@@ -144,14 +192,7 @@ export default function Skill({
                                                 <PiPencil />
                                             </Button>
                                         }>
-                                        <SkillForm
-                                            data={data}
-                                            skill={sk}
-                                            index={conIndex}
-                                            subIndex={skillIndex}
-                                            handleChangeSubContent={handleChangeSubContent}
-                                            handleDirectEditContent={handleDirectEditContent}
-                                        />
+                                        {detail}
                                     </ResumeDrawer>
 
                                     <Button
@@ -165,8 +206,9 @@ export default function Skill({
                                         <PiTrash />
                                     </Button>
                                 </div>
-                        </li>
-                    ))}
+                            </li>
+                        )
+                    })}
             </ul>
 
             {data?.skill?.length < 1 && <div className="my-2 text-muted-foreground text-center text-xs">No skill group added yet</div>}

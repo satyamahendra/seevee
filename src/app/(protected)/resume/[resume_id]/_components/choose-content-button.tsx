@@ -52,7 +52,7 @@ export default function ChooseContentButton({children, handleAddContent}: Choose
                                         {con === "project" && <PiCube />}
                                         {con === "professional" && <PiBriefcase />}
                                     </div>
-                                    <div className="font-[500]">{con[0].toUpperCase() + con.slice(1)}</div>
+                                    <div className="font-medium">{con[0].toUpperCase() + con.slice(1)}</div>
                                     <div className="text-muted-foreground text-xs">
                                         {con === "header" && "Showcase your name, title, and key contact details at the top of your resume."}
                                         {con === "general" && "Add sections like education, experience, or custom details to highlight your background."}

@@ -11,13 +11,14 @@ type ResumeDrawerProps = {
     description?: React.ReactNode
     children: React.ReactNode
     tooltip?: React.ReactNode
+    enabled?: boolean
 }
 
-export default function ResumeDrawer({trigger, title, description, children, tooltip}: ResumeDrawerProps) {
+export default function ResumeDrawer({trigger, title, description, children, tooltip, enabled = true}: ResumeDrawerProps) {
     const {isMobile} = useScreenSize()
     const [open, setOpen] = useState(false)
 
-    const triggerWithClick = cloneElement(trigger as React.ReactElement<{onClick?: () => void}>, {onClick: () => setOpen(true)})
+    const triggerWithClick = cloneElement(trigger as React.ReactElement<{onClick?: () => void}>, enabled ? {onClick: () => setOpen(true)} : {})
 
     return (
         <>

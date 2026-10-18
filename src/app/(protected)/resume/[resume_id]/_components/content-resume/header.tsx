@@ -14,6 +14,8 @@ import {Button} from "@/components/ui/button"
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover"
 import ResumeDrawer from "@/components/custom/resume-drawer"
 import HeaderForm from "../content-form/header-form"
+import {useScreenSize} from "@/utils/hooks/useScreenSize"
+import DrawerDeleteButton from "../drawer-delete-button"
 
 type HeaderProps = {
     data: HeaderContentType
@@ -34,10 +36,30 @@ export default function Header({
     handleDeleteSubContent,
     handleDeleteContent,
 }: HeaderProps) {
-    return (
-        <header className="text-xs relative border-primary avoid-break flex flex-col items-center justify-center hover:bg-muted duration-200 group rounded-lg py-1">
+    const {isMobile} = useScreenSize()
+
+    const form = (
+        <HeaderForm
+            data={data}
+            index={index}
+            handleChangeContent={handleChangeContent}
+            handleChangeSubContent={handleChangeSubContent}
+            handleAddMultipleInput={handleAddMultipleInput}
+            handleDeleteSubContent={handleDeleteSubContent}
+        />
+    )
+
+    const detail = (
+        <>
+            {form}
+            <DrawerDeleteButton handleConfirm={() => handleDeleteContent(index)} label="Delete section" description="This section will be removed from your resume." />
+        </>
+    )
+
+    const inner = (
+        <>
             <input
-                className="w-fit px-2 field-sizing-content bg-primary-foreground rounded-lg font-semibold group-hover:bg-muted border-none shadow-none outline-none text-lg focus:bg-muted focus:border-muted duration-200 py-0.5"
+                className="w-fit px-2 field-sizing-content bg-primary-foreground rounded-lg font-semibold group-hover:bg-muted border-none shadow-none outline-none text-lg focus:border-muted duration-200 py-0.5"
                 type="text"
                 value={data?.fullname || ""}
                 id="fullname"
@@ -51,7 +73,7 @@ export default function Header({
                     <input
                         type="email"
                         placeholder="example@email.com"
-                        className="field-sizing-content bg-primary-foreground rounded-md border-none group-hover:bg-muted shadow-none outline-none text-xs focus:bg-muted focus:border-muted duration-200 py-0.5"
+                        className="field-sizing-content bg-primary-foreground rounded-md border-none group-hover:bg-muted shadow-none outline-none text-xs focus:border-muted duration-200 py-0.5"
                         value={data?.email || ""}
                         id="email"
                         name="email"
@@ -63,7 +85,7 @@ export default function Header({
                     <input
                         type="text"
                         placeholder="+1 (123) 456-7890"
-                        className="field-sizing-content bg-primary-foreground rounded-md border-none group-hover:bg-muted shadow-none outline-none text-xs focus:bg-muted focus:border-muted duration-200 py-0.5"
+                        className="field-sizing-content bg-primary-foreground rounded-md border-none group-hover:bg-muted shadow-none outline-none text-xs focus:border-muted duration-200 py-0.5"
                         value={data?.phone || ""}
                         id="phone"
                         name="phone"
@@ -75,7 +97,7 @@ export default function Header({
                     <input
                         type="text"
                         placeholder="Arizona"
-                        className="field-sizing-content bg-primary-foreground rounded-l-md border-none group-hover:bg-muted shadow-none outline-none text-xs focus:bg-muted focus:border-muted duration-200 py-0.5"
+                        className="field-sizing-content bg-primary-foreground rounded-l-md border-none group-hover:bg-muted shadow-none outline-none text-xs focus:border-muted duration-200 py-0.5"
                         value={data?.city || ""}
                         id="city"
                         name="city"
@@ -85,7 +107,7 @@ export default function Header({
                     <input
                         type="text"
                         placeholder="United States"
-                        className="field-sizing-content bg-primary-foreground rounded-r-md border-none group-hover:bg-muted shadow-none outline-none text-xs focus:bg-muted focus:border-muted duration-200 py-0.5"
+                        className="field-sizing-content bg-primary-foreground rounded-r-md border-none group-hover:bg-muted shadow-none outline-none text-xs focus:border-muted duration-200 py-0.5"
                         value={data?.country || ""}
                         id="country"
                         name="country"
@@ -104,7 +126,7 @@ export default function Header({
                                         <div>{link?.name || "Your link"}</div>
                                     </div>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-[200px] p-2 relative">
+                                <PopoverContent className="w-50 p-2 relative">
                                     <div className="flex gap-2 flex-col">
                                         <Popover>
                                             <PopoverTrigger asChild>
@@ -118,7 +140,14 @@ export default function Header({
                                                         <Button
                                                             value={icon?.name || ""}
                                                             name="icon"
-                                                            onClick={(e) => handleChangeSubContent(e as unknown as Parameters<HandleChangeSubContentType>[0], "links", index, subIndex)}
+                                                            onClick={(e) =>
+                                                                handleChangeSubContent(
+                                                                    e as unknown as Parameters<HandleChangeSubContentType>[0],
+                                                                    "links",
+                                                                    index,
+                                                                    subIndex,
+                                                                )
+                                                            }
                                                             size="icon"
                                                             variant="secondary"
                                                             className={`text-xl  ${icon.name === link.icon ? "" : ""} aspect-square`}
@@ -173,7 +202,26 @@ export default function Header({
                     <PiTrash />
                 </Button>
             </div>
+        </>
+    )
 
+    if (isMobile)
+        return (
+            <ResumeDrawer
+                title="Header"
+                description="Make changes to your data here. Simply exit and your data will stay"
+                trigger={
+                    <header className="text-xs relative border-primary avoid-break flex flex-col items-center justify-center hover:bg-muted duration-200 group rounded-lg py-1 cursor-pointer">
+                        {inner}
+                    </header>
+                }>
+                {detail}
+            </ResumeDrawer>
+        )
+
+    return (
+        <header className="text-xs relative border-primary avoid-break flex flex-col items-center justify-center hover:bg-muted duration-200 group rounded-lg py-1">
+            {inner}
             <ResumeDrawer
                 title="Header"
                 description="Make changes to your data here. Simply exit and your data will stay"
@@ -184,14 +232,7 @@ export default function Header({
                         </Button>
                     </div>
                 }>
-                <HeaderForm
-                    data={data}
-                    index={index}
-                    handleChangeContent={handleChangeContent}
-                    handleChangeSubContent={handleChangeSubContent}
-                    handleAddMultipleInput={handleAddMultipleInput}
-                    handleDeleteSubContent={handleDeleteSubContent}
-                />
+                {detail}
             </ResumeDrawer>
         </header>
     )

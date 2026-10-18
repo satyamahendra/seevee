@@ -33,6 +33,13 @@ export const summaryContentInitial: SummaryContentType = {
 
 export const fontStyles: FontStylesType[] = ["default", "sans", "mono", "serif"]
 
+// "sans" maps to Geist Sans (--font-geist-sans); bare font-sans is the app default (Inter), which made the option look broken
+export const fontStyleClass = (fs: FontStylesType): string => {
+    if (fs === "default") return ""
+    if (fs === "sans") return "font-(family-name:--font-geist-sans)"
+    return `font-${fs}`
+}
+
 export const skillInitial = {id: "", name: "", items: [""]}
 export const skillContentInitial: SkillContentType = {id: "", type: "skill", skill: [skillInitial]}
 

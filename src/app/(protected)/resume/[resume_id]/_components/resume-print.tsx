@@ -25,6 +25,7 @@ function measureFont(className: string) {
 function getPrintFont(selectedFontStyle: FontStylesType): string {
     if (selectedFontStyle === "serif") return measureFont("font-serif")
     if (selectedFontStyle === "mono") return measureFont("font-mono")
+    if (selectedFontStyle === "sans") return measureFont("font-(family-name:--font-geist-sans)")
     return measureFont("font-sans")
 }
 

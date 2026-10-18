@@ -25,6 +25,7 @@ import {AnimatePresence, motion} from "motion/react"
 import General from "./content-resume/general"
 import ChooseContentButton from "./choose-content-button"
 import {Button} from "@/components/ui/button"
+import {fontStyleClass} from "../_static/var"
 
 type ResumeProps = {
     contentStates: ContentStatesType
@@ -81,9 +82,11 @@ export default function ResumeDisplay({
         save()
     }, [debouncedValue, isReady])
 
+    const isEmpty = content.length < 1
+
     return (
         <>
-            <section className={`h-full w-full flex flex-col gap-2 font-${selectedFontStyle} min-h-0 flex-1`}>
+            <section className={`h-full w-full flex flex-col gap-2 ${fontStyleClass(selectedFontStyle)} min-h-0 flex-1`}>
                 <div className="pr-2 h-full w-full bg-primary-foreground overflow-auto rounded-xl pl-3 py-3 border">
                     <ScrollArea className="h-full w-full pr-4">
                         <div className="space-y-4 max-sm:zoom-[0.85]">
@@ -132,8 +135,20 @@ export default function ResumeDisplay({
                                 )
                             })}
                             <ChooseContentButton handleAddContent={handleAddContent}>
-                                <Button className="flex shadow-none w-full text-xs hover:bg-primary-foreground group bg-muted duration-200 cursor-pointer text-muted-foreground rounded-lg px-4 py-6 items-center justify-center gap-2 border-2 border-dashed">
-                                    <PiPlus /> Add New Content
+                                <Button className="flex h-fit shadow-none w-full text-xs hover:bg-primary-foreground group bg-muted duration-200 cursor-pointer text-muted-foreground rounded-lg px-4 py-6 items-center justify-center gap-2 border-2 border-dashed">
+                                    {isEmpty ? (
+                                        <div className="flex flex-col items-center gap-2">
+                                            <div className="w-8 h-8 bg-primary-foreground rounded-lg flex items-center justify-center">
+                                                <PiPlus />
+                                            </div>
+                                            <div>You have a blank page!</div>
+                                            <div>Add a new content</div>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <PiPlus /> Add New Content
+                                        </>
+                                    )}
                                 </Button>
                             </ChooseContentButton>
                         </div>

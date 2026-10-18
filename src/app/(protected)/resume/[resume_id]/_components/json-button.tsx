@@ -12,9 +12,10 @@ import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip"
 type AiButtonProps = {
     contentStates: ContentStatesType
     className?: string
+    variant?: "ghost" | "outline"
 }
 
-export default function JsonButton({contentStates, className}: AiButtonProps) {
+export default function JsonButton({contentStates, className, variant = "ghost"}: AiButtonProps) {
     const {isMobile} = useScreenSize()
     const {content, setContent} = contentStates
 
@@ -51,27 +52,26 @@ export default function JsonButton({contentStates, className}: AiButtonProps) {
     return (
         <>
             <div className={isMobile ? "flex w-full gap-2" : "contents"}>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button size={isMobile ? "default" : "icon-sm"} onClick={handleOpenModal} variant="outline" className={isMobile ? "w-full justify-center gap-3" : "cursor-pointer"}>
-                            <PiBoxArrowDown className={isMobile ? "size-5" : undefined} />
-                            {isMobile && "Import JSON"}
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Import JSON</TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button size={isMobile ? "default" : "icon-sm"} onClick={handleExport} variant="outline" className={isMobile ? "w-full justify-center gap-3" : "cursor-pointer"}>
-                            <PiBoxArrowUp className={isMobile ? "size-5" : undefined} />
-                            {isMobile && "Export JSON"}
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Export JSON</TooltipContent>
-                </Tooltip>
+                <Button
+                    size={"sm"}
+                    onClick={handleOpenModal}
+                    variant={variant}
+                    className={isMobile ? "flex flex-1 justify-center gap-2 h-11 text-sm" : "cursor-pointer flex justify-start gap-2 text-xs"}>
+                    <PiBoxArrowDown />
+                    Import JSON
+                </Button>
+
+                <Button
+                    size={"sm"}
+                    onClick={handleExport}
+                    variant={variant}
+                    className={isMobile ? "flex flex-1 justify-center gap-2 h-11 text-sm" : "cursor-pointer flex justify-start gap-2 text-xs"}>
+                    <PiBoxArrowUp />
+                    Export JSON
+                </Button>
             </div>
 
-            <Drawer swipeDirection={isMobile ? "down" : "right"} open={open} onOpenChange={setOpen}>
+            <Drawer swipeDirection={isMobile ? "down" : "left"} open={open} onOpenChange={setOpen}>
                 <DrawerContent className="[--drawer-content-width:min(100dvw,48rem)]">
                     <DrawerHeader className="flex flex-col items-center text-center">
                         <DrawerTitle className="flex flex-col items-center gap-4">Import Resume</DrawerTitle>

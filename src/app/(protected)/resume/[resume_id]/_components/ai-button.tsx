@@ -14,9 +14,10 @@ type AiButtonProps = {
     contentStates: ContentStatesType
     resumeId: string
     className?: string
+    icon?: boolean
 }
 
-export default function AiButton({contentStates, resumeId, className}: AiButtonProps) {
+export default function AiButton({contentStates, resumeId, className, icon = false}: AiButtonProps) {
     const router = useRouter()
     const {isMobile} = useScreenSize()
     const {content, setContent} = contentStates
@@ -114,12 +115,21 @@ export default function AiButton({contentStates, resumeId, className}: AiButtonP
             <Button
                 disabled={isLoading}
                 onClick={handleOpenModal}
-                size="sm"
-                className={`relative w-24 bg-blue-400 hover:bg-blue-500 duration-200 ${className ?? "w-full"}`}>
-                {isLoading ? null : "AI Tailor"}
+                size={icon ? "icon" : "sm"}
+                aria-label={icon ? "AI Tailor" : undefined}
+                className={
+                    icon
+                        ? "relative size-11 rounded-full bg-blue-400 hover:bg-blue-500 duration-200"
+                        : `relative w-24 bg-blue-400 hover:bg-blue-500 duration-200 ${className ?? "w-full"}`
+                }>
+                {isLoading || icon ? null : "AI Tailor"}
                 {isLoading ? <PiCircleDashed className="animate-spin" /> : <PiMagicWandFill />}
-                <div className="w-3 h-3 bg-blue-300 rounded-xs rotate-45 aspect-square absolute -top-1 -right-1"></div>
-                <div className="w-3 h-3 bg-blue-300 rounded-xs rotate-45 aspect-square absolute -top-1 -right-1 animate-ping"></div>
+                {!icon && (
+                    <>
+                        <div className="w-3 h-3 bg-blue-300 rounded-xs rotate-45 aspect-square absolute -top-1 -right-1"></div>
+                        <div className="w-3 h-3 bg-blue-300 rounded-xs rotate-45 aspect-square absolute -top-1 -right-1 animate-ping"></div>
+                    </>
+                )}
             </Button>
 
             <Drawer swipeDirection={isMobile ? "down" : "right"} open={open} onOpenChange={setOpen}>

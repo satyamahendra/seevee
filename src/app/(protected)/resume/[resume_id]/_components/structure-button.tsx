@@ -1,36 +1,49 @@
 import {Button} from "@/components/ui/button"
 import {PiDotsSixVertical, PiPlus, PiSliders, PiTrash} from "react-icons/pi"
-import {ContentStateType, ContentStatesType, GeneralType, HandleAddContentType, HandleDeleteContentType} from "../_static/type"
+import {ContentStateType, ContentStatesType, GeneralContentType, GeneralType, HandleAddContentType, HandleDeleteContentType} from "../_static/type"
 import {Reorder, motion} from "motion/react"
 import ChooseContentButton from "./choose-content-button"
 import ResumeDrawer from "@/components/custom/resume-drawer"
 import {createFallbackKey} from "@/utils/helpers/createFallbackKey"
-import {useScreenSize} from "@/utils/hooks/useScreenSize"
 
 type StructureButtonProps = {
     contentStates: ContentStatesType
     handleDeleteContent: HandleDeleteContentType
     handleAddContent: HandleAddContentType
     className?: string
+    variant?: "ghost" | "outline"
+    iconOnly?: boolean
 }
 
-export default function StructureButton({contentStates, handleDeleteContent, handleAddContent, className}: StructureButtonProps) {
+export default function StructureButton({contentStates, handleDeleteContent, handleAddContent, className, variant = "ghost", iconOnly = false}: StructureButtonProps) {
     const {content, setContent} = contentStates
-    const {isMobile} = useScreenSize()
 
     const handleGeneralReorder = (conIndex: number, newOrder: GeneralType[]) => {
         setContent((prev) => prev.map((item, index) => (index === conIndex ? ({...item, general: newOrder} as ContentStateType) : item)))
+    }
+
+    const handleDeleteGeneralItem = (conIndex: number, genIndex: number) => {
+        setContent((prev) =>
+            prev.map((item, index) => {
+                if (index !== conIndex) return item
+                const general = (item as GeneralContentType).general.filter((_, index2) => index2 !== genIndex)
+                return {...item, general} as ContentStateType
+            }),
+        )
     }
 
     return (
         <ResumeDrawer
             title="Your Resume Structure"
             description="Make changes to your data here. Simply exit and your data will stay"
-            tooltip={isMobile ? null : "Restructure Resume"}
             trigger={
-                <Button size={isMobile ? "default" : "icon-sm"} variant="outline" className={`cursor-pointer ${isMobile && "w-full"}`}>
+                <Button
+                    size={iconOnly ? "icon" : "sm"}
+                    variant={variant}
+                    aria-label={iconOnly ? "Adjust structure" : undefined}
+                    className={iconOnly ? `size-11 rounded-full cursor-pointer ${className ?? ""}` : `flex gap-2 justify-start cursor-pointer text-xs ${className ?? ""}`}>
                     <PiSliders />
-                    {isMobile && "Restructure Resume"}
+                    {iconOnly ? null : "Adjust Structure"}
                 </Button>
             }>
             <motion.div layout className="text-xs">
@@ -52,7 +65,7 @@ export default function StructureButton({contentStates, handleDeleteContent, han
                                         <PiDotsSixVertical />
                                     </div>
                                     <div className="flex flex-col items-start justify-between w-full">
-                                        <div className="flex-1 truncate pr-2">
+                                        <div className="flex-1 truncate pr-8">
                                             {con.type === "header" && "Header"}
                                             {con.type === "summary" && "Summary"}
                                             {con.type === "general" && `${con?.title || "General"}`}
@@ -67,19 +80,26 @@ export default function StructureButton({contentStates, handleDeleteContent, han
                                                     handleGeneralReorder(conIndex, newOrder)
                                                 }}
                                                 className="space-y-2 mt-2 w-full">
-                                                {con.general.map((gen) => {
+                                                {con.general.map((gen, genIndex) => {
                                                     const genKey = gen.id || createFallbackKey()
                                                     return (
                                                         <Reorder.Item
                                                             key={genKey}
                                                             value={gen}
-                                                            className="text-xs flex items-center gap-2 cursor-grab border rounded p-2 bg-background truncate"
+                                                            className="relative text-xs flex items-center gap-2 cursor-grab border rounded p-2 pr-8 bg-background truncate"
                                                             whileDrag={{
                                                                 cursor: "grabbing",
                                                                 zIndex: 30,
                                                             }}>
                                                             <PiDotsSixVertical className="shrink-0" />
-                                                            <span className="text-ellipsis text-muted-foreground truncate">{gen?.title || "Untitled"}</span>
+                                                            <span className="flex-1 text-ellipsis text-muted-foreground truncate">{gen?.title || "Untitled"}</span>
+                                                            <Button
+                                                                onClick={() => handleDeleteGeneralItem(conIndex, genIndex)}
+                                                                size="icon"
+                                                                variant="ghost"
+                                                                className="absolute right-1 w-5 h-5 text-muted-foreground hover:text-destructive">
+                                                                <PiTrash />
+                                                            </Button>
                                                         </Reorder.Item>
                                                     )
                                                 })}
@@ -91,7 +111,7 @@ export default function StructureButton({contentStates, handleDeleteContent, han
                                         onClick={() => handleDeleteContent(conIndex)}
                                         size="icon"
                                         variant="ghost"
-                                        className="absolute opacity-0 group-hover:opacity-100 duration-200 w-4 h-4 text-muted-foreground p-2 top-2 right-2">
+                                        className="absolute w-4 h-4 text-muted-foreground hover:text-destructive p-2 top-2 right-2">
                                         <PiTrash />
                                     </Button>
                                 </Reorder.Item>

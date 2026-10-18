@@ -5,7 +5,7 @@ import React from "react"
 import {PiArrowSquareOut, PiCopySimple, PiFileText, PiFileX, PiTrash} from "react-icons/pi"
 import AiButton from "./ai-button"
 import {ContentStatesType, FontStylesType, HandleAddContentType, HandleDeleteContentType, SettingsStatesType} from "../_static/type"
-import {fontStyles} from "../_static/var"
+import {fontStyles, fontStyleClass} from "../_static/var"
 import Link from "next/link"
 import StructureButton from "./structure-button"
 import ConfirmationPopover from "@/components/custom/confirmation-popover"
@@ -57,7 +57,7 @@ export default function MenuActions({
                                 type="button"
                                 size="sm"
                                 variant={selectedFontStyle === fs ? "secondary" : "ghost"}
-                                className={`h-9 justify-start px-3 text-sm ${selectedFontStyle === fs ? "ring-1 ring-primary/30" : ""} font-${fs}`}
+                                className={`h-9 justify-start px-3 text-sm ${selectedFontStyle === fs ? "ring-1 ring-primary/30" : ""} ${fontStyleClass(fs as FontStylesType)}`}
                                 onClick={() => setSelectedFontStyle(fs as FontStylesType)}
                                 aria-pressed={selectedFontStyle === fs}
                             >
