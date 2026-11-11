@@ -99,7 +99,7 @@ jobs:
                       --network seevee-net \
                       --restart unless-stopped \
                       -p 127.0.0.1:5432:5432 \
-                      -v postgres_data:/var/lib/postgresql/data \
+                      -v seevee_data:/var/lib/postgresql/data \
                       -e POSTGRES_USER="$POSTGRES_USER" \
                       -e POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
                       -e POSTGRES_DB="$POSTGRES_DB" \
