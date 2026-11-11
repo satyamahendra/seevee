@@ -4,7 +4,7 @@ import {Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle} fro
 import {useQueryParams} from "@/utils/hooks/useQueryParams"
 import {useScreenSize} from "@/utils/hooks/useScreenSize"
 import {cn} from "@/lib/utils"
-import {PiArrowsClockwise, PiArrowSquareOut, PiCalendarDots, PiCheckCircle, PiCircleDashed, PiCoin, PiHandshake, PiLink, PiMoney, PiTicket, PiX} from "react-icons/pi"
+import {PiArrowsClockwise, PiArrowSquareOut, PiCalendarDots, PiCheckCircle, PiCoin, PiHandshake, PiLink, PiMoney, PiTicket, PiX} from "react-icons/pi"
 import {useQuery, useQueryClient} from "@tanstack/react-query"
 import {getOrder} from "../services/get-order"
 import {Loader2} from "lucide-react"

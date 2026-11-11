@@ -1,13 +1,12 @@
 import {Button} from "@/components/ui/button"
 import {Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle} from "@/components/ui/drawer"
 import {Textarea} from "@/components/ui/textarea"
-import React, {useState} from "react"
+import {useState} from "react"
 import {ContentStatesType, ContentStateType} from "../_static/type"
 import {copyToClipboard} from "@/utils/helpers/copyToClipboard"
 import {toast} from "sonner"
 import {PiBoxArrowDown, PiBoxArrowUp} from "react-icons/pi"
 import {useScreenSize} from "@/utils/hooks/useScreenSize"
-import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip"
 
 type AiButtonProps = {
     contentStates: ContentStatesType
@@ -15,7 +14,7 @@ type AiButtonProps = {
     variant?: "ghost" | "outline"
 }
 
-export default function JsonButton({contentStates, className, variant = "ghost"}: AiButtonProps) {
+export default function JsonButton({contentStates, variant = "ghost"}: AiButtonProps) {
     const {isMobile} = useScreenSize()
     const {content, setContent} = contentStates
 

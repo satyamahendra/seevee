@@ -1,7 +1,7 @@
 "use client"
 
 import {zodResolver} from "@hookform/resolvers/zod"
-import {Controller, useForm} from "react-hook-form"
+import {Controller, useForm, useWatch} from "react-hook-form"
 import {PiCardholder, PiPlus} from "react-icons/pi"
 
 import {Button} from "@/components/ui/button"
@@ -48,21 +48,20 @@ const RoleDetailModal = () => {
 
     const form = useForm<RoleFormSchema>({
         resolver: zodResolver(roleSchema),
-        values:
-            isCreate
-                ? {name: "", name_before: "", permissions: [], is_active: true}
-                : {
-                      name: role?.name || "",
-                      name_before: role?.name || "",
-                      permissions: rolePermissionNames,
-                      is_active: role?.is_active ?? true,
-                  },
+        values: isCreate
+            ? {name: "", name_before: "", permissions: [], is_active: true}
+            : {
+                  name: role?.name || "",
+                  name_before: role?.name || "",
+                  permissions: rolePermissionNames,
+                  is_active: role?.is_active ?? true,
+              },
     })
 
     const permissionNames = matrixData?.data?.permission_names ?? []
     const {matrix, other} = groupPermissions(permissionNames)
 
-    const watchedPermissions = form.watch("permissions") ?? []
+    const watchedPermissions = useWatch({control: form.control, name: "permissions"}) ?? []
 
     const togglePermission = (permissionName: string, checked: boolean) => {
         const current = form.getValues("permissions")
@@ -100,9 +99,7 @@ const RoleDetailModal = () => {
             <DrawerContent aria-describedby="role-form" className={cn(isMobile ? "h-[80vh]" : "")}>
                 <DrawerHeader className="flex flex-col items-center justify-center">
                     <DrawerTitle className="flex items-center gap-4">{isCreate ? "Create" : "Edit"} Role</DrawerTitle>
-                    <DrawerDescription className="flex items-center gap-4">
-                        {isCreate ? "Create" : "Edit"} a custom role for your organization.
-                    </DrawerDescription>
+                    <DrawerDescription className="flex items-center gap-4">{isCreate ? "Create" : "Edit"} a custom role for your organization.</DrawerDescription>
                 </DrawerHeader>
 
                 <div className="p-6 flex-1 overflow-y-auto">
@@ -178,11 +175,11 @@ const RoleDetailModal = () => {
                                                             const permissionName = `${action} ${group.attribute}`
                                                             return (
                                                                 <td key={action} className="px-3 py-2 text-center">
-                                                                <Checkbox
-                                                                    checked={watchedPermissions.includes(permissionName)}
-                                                                    onCheckedChange={(c) => togglePermission(permissionName, !!c)}
-                                                                    title={permissionName}
-                                                                />
+                                                                    <Checkbox
+                                                                        checked={watchedPermissions.includes(permissionName)}
+                                                                        onCheckedChange={(c) => togglePermission(permissionName, !!c)}
+                                                                        title={permissionName}
+                                                                    />
                                                                 </td>
                                                             )
                                                         })}
@@ -198,7 +195,10 @@ const RoleDetailModal = () => {
                                         <h4 className="text-xs font-medium text-muted-foreground">Other permissions</h4>
                                         {other.map((permissionName) => (
                                             <label key={permissionName} className="flex items-center gap-2 text-sm">
-                                                <Checkbox checked={watchedPermissions.includes(permissionName)} onCheckedChange={(c) => togglePermission(permissionName, !!c)} />
+                                                <Checkbox
+                                                    checked={watchedPermissions.includes(permissionName)}
+                                                    onCheckedChange={(c) => togglePermission(permissionName, !!c)}
+                                                />
                                                 {permissionName}
                                             </label>
                                         ))}

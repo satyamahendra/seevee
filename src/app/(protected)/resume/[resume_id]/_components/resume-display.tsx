@@ -81,7 +81,7 @@ export default function ResumeDisplay({
         }
 
         save()
-    }, [debouncedValue, stringifiedResume, isReady, isAiGenerating])
+    }, [debouncedValue, stringifiedResume, isReady, isAiGenerating, content, resumeId])
 
     const isEmpty = content.length < 1
 
