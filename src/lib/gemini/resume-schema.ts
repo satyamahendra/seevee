@@ -66,10 +66,55 @@ const partialResumeItemSchema = z
     })
     .passthrough()
 
-export const aiRequestSchema = z.object({
-    payload: z.array(partialResumeItemSchema),
-    userPrompt: z.string().trim().min(1).max(10000),
-    resumeId: z.string().uuid(),
-})
+// Token guards - mirror the client schema and cap the PDF payload.
+export const AI_LIMITS = {
+    payloadItems: 200,
+    request: 12_000,
+    focusItems: 8,
+    fileBase64: 6_000_000,
+    pdfText: 20_000,
+} as const
+
+const fileSchema = z
+    .object({
+        name: z.string().min(1).max(255),
+        mime: z.literal("application/pdf"),
+        base64: z.string().min(1).max(AI_LIMITS.fileBase64),
+    })
+    .nullish()
+
+export const aiRequestSchema = z
+    .object({
+        payload: z.array(partialResumeItemSchema).max(AI_LIMITS.payloadItems),
+        request: z.string().trim().max(AI_LIMITS.request).optional().default(""),
+        focus: z.array(z.string().trim().max(80)).max(AI_LIMITS.focusItems).optional().default([]),
+        resumeId: z.string().uuid(),
+        file: fileSchema,
+    })
+    .refine((value) => value.request.length > 0 || value.focus.length > 0 || Boolean(value.file?.base64), {
+        message: "A request, a focus area, or a PDF is required",
+    })
 
 export type ResumePayload = z.infer<typeof resumeSchema>
+
+// What the model returns. `resume` comes first so the client can stream it into the preview.
+export const aiOutputSchema = z.object({
+    resume: resumeSchema,
+    changes: z.array(z.object({blockId: z.string(), summary: z.string()})),
+    // Every important JD term; the client computes which ones the resume covers.
+    keywords: z.array(z.string()),
+})
+
+export type AiOutput = z.infer<typeof aiOutputSchema>
+
+// Gemini's structured output takes a JSON Schema subset: no `$schema`, and `enum` instead of `const`.
+const aiOutputJson = z.toJSONSchema(aiOutputSchema, {
+    override: ({jsonSchema}) => {
+        if (jsonSchema.const !== undefined) {
+            jsonSchema.enum = [jsonSchema.const]
+            delete jsonSchema.const
+        }
+    },
+})
+delete aiOutputJson.$schema
+export const aiOutputJsonSchema = {...aiOutputJson, propertyOrdering: ["resume", "changes", "keywords"]}

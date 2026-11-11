@@ -10,6 +10,12 @@
     --font-sans: var(--font-sans);
     --font-mono: var(--font-geist-mono);
     --font-heading: var(--font-sans);
+    --font-paper: var(--font-paper);
+    --color-desk: var(--desk);
+    --color-paper: var(--paper);
+    --color-ink: var(--ink);
+    --color-brand: var(--brand);
+    --color-brand-2: var(--brand-2);
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -82,9 +88,19 @@
     --sidebar-ring: oklch(0.708 0 0);
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
+    --desk: #f5f6f8;
+    --paper: #ffffff;
+    --ink: #19202f;
+    --brand: oklch(0.56 0.22 300);
+    --brand-2: oklch(0.65 0.22 355);
 }
 
 .dark {
+    --desk: #161b26;
+    --paper: #1f2533;
+    --ink: #e6e9f0;
+    --brand: oklch(0.7 0.18 300);
+    --brand-2: oklch(0.75 0.17 355);
     --background: oklch(0.145 0 0);
     --foreground: oklch(0.985 0 0);
     --card: oklch(0.205 0 0);
@@ -442,3 +458,4 @@ body {
         }
     }
 }
+

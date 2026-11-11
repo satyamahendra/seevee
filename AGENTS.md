@@ -1,13 +1,11 @@
 <!-- BEGIN:nextjs-agent-rules -->
+
 # This is NOT the Next.js you know
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
 
-Key guides before writing code:
-- `01-app/01-getting-started/05-server-and-client-components.md` — server vs client component rules
-- `01-app/02-guides/server-and-client-boundary.md`
-- `01-app/02-guides/server-actions.md` — server action contract
-- `01-app/01-getting-started/07-mutating-data.md` — plus `01-app/02-guides/forms.md`
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
 <!-- END:nextjs-agent-rules -->
 
 <!-- BEGIN:repo-conventions -->
@@ -116,7 +114,7 @@ src/utils/types/                  ServerResult, Pagination, API route helpers, e
 - Dark mode via `next-themes`; `toast` from `sonner`.
 
 ## Environment variables
-`DATABASE_URL`, `BETTER_AUTH_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `WHITELISTED_EMAILS`, `MIDTRANS_SERVER_KEY`, `NEXT_PUBLIC_MIDTRANS_CLIENT_KEY`, `NEXT_PUBLIC_MIDTRANS_URL`.
+`DATABASE_URL`, `BETTER_AUTH_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `WHITELISTED_EMAILS`, `MIDTRANS_SERVER_KEY`, `NEXT_PUBLIC_MIDTRANS_CLIENT_KEY`, `NEXT_PUBLIC_MIDTRANS_URL`, `GEMINI_API_KEY`, `GEMINI_MODEL` (optional, default `gemini-3.8-flash`), `USD_TO_IDR` (fixed rate used to convert USD-cent product prices to the IDR Midtrans charge).
 
 ## Commands
 - Dev `npm run dev` · Build `npm run build` · Start `npm run start` · Lint `npm run lint` (eslint).

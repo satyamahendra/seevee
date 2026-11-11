@@ -4,6 +4,8 @@ import {Geist, Geist_Mono, Inter} from "next/font/google"
 import "@/app/globals.css"
 import {Providers} from "@/components/custom/providers/providers"
 import Script from "next/script"
+import {connection} from "next/server"
+import {siteUrl} from "@/utils/helpers/site-url"
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'})
 
@@ -17,9 +19,20 @@ const geistMono = Geist_Mono({
     subsets: ["latin"],
 })
 
-export const metadata: Metadata = {
-    title: "Seevee",
-    description: "AI-assisted resume builder",
+const description = "Write your resume once, then tailor it to every job with AI. Translate it, share it with one link, or print it to PDF."
+
+export async function generateMetadata(): Promise<Metadata> {
+    // The site URL is only known at runtime (see site-url.ts).
+    await connection()
+    return {
+        metadataBase: new URL(siteUrl()),
+        title: {default: "seevee | AI resume builder that tailors your resume to every job", template: "%s | seevee"},
+        description,
+        applicationName: "seevee",
+        alternates: {canonical: "/"},
+        openGraph: {type: "website", siteName: "seevee", locale: "en_US", url: "/", description},
+        twitter: {card: "summary_large_image"},
+    }
 }
 
 export default function RootLayout({

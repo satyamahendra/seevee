@@ -32,15 +32,15 @@ const Topbar = () => {
     }
 
     return (
-        <header className="w-full border-b flex justify-center">
-            <div className="max-w-300 w-full flex justify-between px-6 py-2 items-center">
+        <header className="w-full border-b flex justify-center bg-background">
+            <div className="max-w-250 w-full flex justify-between px-6 py-4 items-center">
                 {mounted && !isMobile && (
-                    <div className="flex gap-3 items-center text-lg tracking-tighter font-light">
-                        <div className="aspect-square w-3 h-3 rotate-45 rounded-xs bg-primary"></div>
+                    <div className="flex gap-3 items-center text-xl tracking-tighter font-light">
+                        <div className="aspect-square w-3 h-3 rotate-45 rounded-xs bg-linear-to-br from-brand to-brand-2"></div>
                         seevee
                     </div>
                 )}
-                <ul className="flex gap-2 ml-auto items-center">
+                <ul className="flex gap-4 ml-auto items-center">
                     <li>
                         <UserCreditsBox credits={session?.user?.totalCredits ?? 0} />
                     </li>

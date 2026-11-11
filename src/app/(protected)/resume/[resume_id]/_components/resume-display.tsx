@@ -52,7 +52,7 @@ export default function ResumeDisplay({
     handleDirectEditContent,
     handleDeleteContent,
 }: ResumeProps) {
-    const {content} = contentStates
+    const {content, isAiGenerating} = contentStates
     const [isSaving, setIsSaving] = useState<boolean>(false)
     const {selectedFontStyle} = settingsStates
 
@@ -63,13 +63,14 @@ export default function ResumeDisplay({
     const lastSavedRef = useRef(debouncedValue)
 
     useEffect(() => {
-        if (isReady && stringifiedResume !== lastSavedRef.current) {
+        if (isReady && !isAiGenerating && stringifiedResume !== lastSavedRef.current) {
             setIsSaving(true)
         }
-    }, [stringifiedResume, isReady])
+    }, [stringifiedResume, isReady, isAiGenerating])
 
     useEffect(() => {
-        if (!isReady) return
+        // Wait for the debounce to settle so a streamed AI edit is written once, at the end.
+        if (!isReady || isAiGenerating || debouncedValue !== stringifiedResume) return
 
         const save = async () => {
             setIsSaving(true)
@@ -80,7 +81,7 @@ export default function ResumeDisplay({
         }
 
         save()
-    }, [debouncedValue, isReady])
+    }, [debouncedValue, stringifiedResume, isReady, isAiGenerating])
 
     const isEmpty = content.length < 1
 

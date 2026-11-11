@@ -59,8 +59,7 @@ export default function MenuActions({
                                 variant={selectedFontStyle === fs ? "secondary" : "ghost"}
                                 className={`h-9 justify-start px-3 text-sm ${selectedFontStyle === fs ? "ring-1 ring-primary/30" : ""} ${fontStyleClass(fs as FontStylesType)}`}
                                 onClick={() => setSelectedFontStyle(fs as FontStylesType)}
-                                aria-pressed={selectedFontStyle === fs}
-                            >
+                                aria-pressed={selectedFontStyle === fs}>
                                 {fs.charAt(0).toUpperCase() + fs.slice(1)}
                             </Button>
                         ))}
@@ -121,13 +120,16 @@ export default function MenuActions({
                 description="Your resume will be overwritten by the empty resume if you continue."
                 title="Are you sure?"
             />
-            <JsonButton contentStates={contentStates} />
+            {/* <JsonButton contentStates={contentStates} /> */}
 
             <div className="my-3 border-b" />
 
             <ConfirmationPopover
                 button={
-                    <Button size="sm" variant="ghost" className="w-full h-10 text-destructive flex justify-start gap-3 rounded-lg px-3 text-sm hover:bg-destructive/10 hover:text-destructive">
+                    <Button
+                        size="sm"
+                        variant="ghost"
+                        className="w-full h-10 text-destructive flex justify-start gap-3 rounded-lg px-3 text-sm hover:bg-destructive/10 hover:text-destructive">
                         <PiTrash />
                         Delete resume
                     </Button>

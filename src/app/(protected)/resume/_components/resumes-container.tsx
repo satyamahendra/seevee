@@ -1,7 +1,6 @@
 import React from "react"
 import CreateResumeCard from "./create-resume-card"
 import ResumeCard from "./resume-card"
-import AnimatedContainer from "@/components/custom/animated-container"
 import type {ResumeRow} from "../action"
 
 type ResumeContainerProps = {
@@ -10,16 +9,11 @@ type ResumeContainerProps = {
 
 export default function ResumesContainer({resumes}: ResumeContainerProps) {
     return (
-        <AnimatedContainer>
-            <h1 className="text-xl font-semibold">Resume</h1>
-            <p className="text-muted-foreground text-sm">Your collection of resumes</p>
-
-            <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <CreateResumeCard />
-                {resumes.map((resume, index) => (
-                    <ResumeCard key={index} resume={resume} />
-                ))}
-            </div>
-        </AnimatedContainer>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            <CreateResumeCard />
+            {resumes.map((resume) => (
+                <ResumeCard key={resume.id} resume={resume} />
+            ))}
+        </div>
     )
 }

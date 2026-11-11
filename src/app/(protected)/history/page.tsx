@@ -1,30 +1,37 @@
-import React from "react"
-import UsedTab from "./_components/used-tab"
-import BoughtTab from "./_components/bought-tab"
-import {PiSpinner} from "react-icons/pi"
+import React, {Suspense} from "react"
+import AnimDiv from "@/components/custom/anim-div"
+import {Loader2} from "lucide-react"
+import HistoryList from "./_components/history-list"
+import {PiTicket} from "react-icons/pi"
+import PageHeader from "@/components/custom/page-header/page-header"
 
 type PageProps = {
-    searchParams?: Promise<{type: "used" | "bought"; page?: number}>
+    searchParams: Promise<{page?: string}>
 }
 
 export const metadata = {
     title: "Seevee | History",
-    description: "Your transaction and purchase history",
+    description: "Your credits usage history",
 }
 
 export default async function Page({searchParams}: PageProps) {
-    const {type, page} = (await searchParams) || {}
-
-    if (type === "used") return <UsedTab page={page} />
-
-    if (type === "bought") return <BoughtTab page={page} />
+    const {page} = await searchParams
+    const pageNum = page ? parseInt(page) || 1 : 1
 
     return (
-        <div className="flex flex-col flex-1 justify-center items-center text-sm text-muted-foreground gap-4">
-            <div className="flex items-center gap-2">
-                <PiSpinner className="animate-spin text-2xl" />
-                loading...
-            </div>
-        </div>
+        <AnimDiv className="flex flex-col gap-4">
+            <PageHeader title="History" description="Your credits usage history" icon={<PiTicket />} />
+            <Suspense
+                key={`${page}`}
+                fallback={
+                    <AnimDiv className="flex items-center justify-center h-20">
+                        <span className="text-muted-foreground">
+                            <Loader2 className="animate-spin text-primary" />
+                        </span>
+                    </AnimDiv>
+                }>
+                <HistoryList page={pageNum} />
+            </Suspense>
+        </AnimDiv>
     )
 }

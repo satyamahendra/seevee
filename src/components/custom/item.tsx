@@ -2,7 +2,7 @@
 
 import {cn} from "@/lib/utils"
 
-type ListItemProps = React.ComponentProps<"div"> & {
+type ListItemProps = Omit<React.ComponentProps<"div">, "title"> & {
     media?: React.ReactNode
     title?: React.ReactNode
     description?: React.ReactNode

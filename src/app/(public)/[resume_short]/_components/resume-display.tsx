@@ -16,6 +16,7 @@ import {
 import {fontStyles} from "@/app/(protected)/resume/[resume_id]/_static/var"
 import AnimatedContainer from "@/components/custom/animated-container"
 import {Button} from "@/components/ui/button"
+import {ScrollArea} from "@/components/ui/scroll-area"
 import {format} from "date-fns"
 import Link from "next/link"
 import {Fragment, useRef, useState} from "react"
@@ -30,7 +31,7 @@ export default function ResumeDisplay({content}: ResumeDisplayProps) {
     const [selectedFontStyle, setSelectedFontStyle] = useState<FontStylesType>("default")
     const handleSelectFontStyle = (type: FontStylesType) => setSelectedFontStyle(type)
 
-    const contentStates = {content, setContent: () => {}}
+    const contentStates = {content, setContent: () => {}, isAiGenerating: false, setIsAiGenerating: () => {}}
     const settingsStates = {selectedFontStyle, setSelectedFontStyle: () => {}}
 
     const thisHeaderData = content.find((item) => item.type === "header")
@@ -42,8 +43,8 @@ export default function ResumeDisplay({content}: ResumeDisplayProps) {
     }
 
     return (
-        <AnimatedContainer className=" sm:w-[55%] space-y-4">
-            <div className="flex justify-betweeen flex-col gap-2 sm:flex-row items-center w-full">
+        <AnimatedContainer className="flex min-h-0 w-full max-w-3xl flex-1 flex-col gap-4">
+            <div className="flex shrink-0 flex-col items-center gap-2 sm:flex-row w-full">
                 <Button onClick={handlePrintResume} className="text-xs h-7">
                     <PiDownloadSimple /> Download Resume
                 </Button>
@@ -63,17 +64,19 @@ export default function ResumeDisplay({content}: ResumeDisplayProps) {
                     })}
                 </div>
             </div>
-            <div className={`bg-primary-foreground px-4 w-full pb-2 rounded-xl font-${selectedFontStyle}`}>
-                {content.map((con, index) => (
-                    <Fragment key={index}>
-                        {con.type === "header" && <HeaderPrint data={con as HeaderContentType} />}
-                        {con.type === "summary" && <SummaryPrint data={con as SummaryContentType} />}
-                        {con.type === "general" && <GeneralPrint data={con as GeneralContentType} />}
-                        {con.type === "skill" && <SkillPrint data={con as SkillContentType} />}
-                    </Fragment>
-                ))}
-            </div>
-            <div className="flex justify-center items-center">
+            <ScrollArea className="min-h-0 w-full flex-1 rounded-xl border bg-primary-foreground">
+                <div className={`px-6 pb-4 font-${selectedFontStyle}`}>
+                    {content.map((con, index) => (
+                        <Fragment key={index}>
+                            {con.type === "header" && <HeaderPrint data={con as HeaderContentType} />}
+                            {con.type === "summary" && <SummaryPrint data={con as SummaryContentType} />}
+                            {con.type === "general" && <GeneralPrint data={con as GeneralContentType} />}
+                            {con.type === "skill" && <SkillPrint data={con as SkillContentType} />}
+                        </Fragment>
+                    ))}
+                </div>
+            </ScrollArea>
+            <div className="flex shrink-0 justify-center items-center">
                 <Link href="/" className="text-xs text-muted-foreground text-center">
                     Powered by Seevee {format(new Date(), "yyyy")}
                 </Link>

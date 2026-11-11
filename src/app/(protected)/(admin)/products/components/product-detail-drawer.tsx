@@ -213,14 +213,14 @@ const ProductForm = () => {
                                         control={form.control}
                                         render={({field, fieldState}) => (
                                             <Field data-invalid={fieldState.invalid}>
-                                                <FieldLabel htmlFor="price_actual">Price Actual</FieldLabel>
+                                                <FieldLabel htmlFor="price_actual">Price (US cents)</FieldLabel>
                                                 <Input
                                                     {...field}
                                                     type="number"
                                                     id="price_actual"
                                                     aria-invalid={fieldState.invalid}
-                                                    placeholder="Price Actual"
-                                                    onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : 0)}
+                                                    placeholder="e.g. 499 = $4.99"
+                                                    onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value, 10) : 0)}
                                                 />
                                                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                                             </Field>
@@ -231,14 +231,14 @@ const ProductForm = () => {
                                         control={form.control}
                                         render={({field, fieldState}) => (
                                             <Field data-invalid={fieldState.invalid}>
-                                                <FieldLabel htmlFor="price_alternate">Price Alternate</FieldLabel>
+                                                <FieldLabel htmlFor="price_alternate">Strike-through price (US cents)</FieldLabel>
                                                 <Input
                                                     {...field}
                                                     type="number"
                                                     id="price_alternate"
                                                     aria-invalid={fieldState.invalid}
-                                                    placeholder="Price Alternate"
-                                                    onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : 0)}
+                                                    placeholder="e.g. 999 = $9.99"
+                                                    onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value, 10) : 0)}
                                                 />
                                                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                                             </Field>

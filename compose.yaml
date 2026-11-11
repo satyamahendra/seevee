@@ -15,7 +15,7 @@ services:
             migrator:
                 condition: service_completed_successfully
         ports:
-            - "3001:3000"
+            - "3000:3000"
 
     migrator:
         build:
@@ -49,7 +49,7 @@ services:
             timeout: 5s
             retries: 10
         ports:
-            - "5433:5432"
+            - "5432:5432"
         volumes:
             - postgres_data:/var/lib/postgresql/data
 

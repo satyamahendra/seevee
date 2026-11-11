@@ -4,7 +4,6 @@ import {hasAccess, menuItems} from "@/utils/constants/sidebar"
 import SidebarItem from "./sidebar-item"
 import {authClient} from "@/lib/auth-client"
 import {useEffect, useState} from "react"
-import {cn} from "@/lib/utils"
 import {Button} from "@/components/ui/button"
 import {PiList} from "react-icons/pi"
 import {useScreenSize} from "@/utils/hooks/useScreenSize"
@@ -36,17 +35,15 @@ const Sidebar = () => {
     return (
         <>
             {!isMobile ? (
-                <aside className={cn("top-0 p-6 left-0 transition-all duration-300 ease-in-out w-52")}>
-                    <div className=" rounded-lg h-full flex flex-col overflow-hidden">
-                        <ul className="flex flex-col gap-1">
-                            {menuItems
-                                .filter((menu) => hasAccess(menu, userPermissions, userRoles))
-                                .map((menu) => (
-                                    <SidebarItem key={menu.label} menu={menu} userPermissions={userPermissions} userRoles={userRoles} />
-                                ))}
-                        </ul>
-                    </div>
-                </aside>
+                <nav className="w-full flex justify-center">
+                    <ul className="max-w-250 w-full flex items-center px-6">
+                        {menuItems
+                            .filter((menu) => hasAccess(menu, userPermissions, userRoles))
+                            .map((menu) => (
+                                <SidebarItem key={menu.label} menu={menu} userPermissions={userPermissions} userRoles={userRoles} horizontal />
+                            ))}
+                    </ul>
+                </nav>
             ) : (
                 <Drawer swipeDirection={"up"} open={isOpen} onOpenChange={() => setIsOpen((prev) => !prev)}>
                     <DrawerTrigger

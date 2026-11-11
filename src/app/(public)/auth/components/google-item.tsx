@@ -14,7 +14,7 @@ const GoogleItem = () => {
         setIsLoading(true)
         const {error} = await authClient.signIn.social({
             provider: "google",
-            callbackURL: "/home",
+            callbackURL: "/resume",
         })
         if (error) {
             toast.error(error.message ?? "Failed to sign in.")

@@ -31,7 +31,8 @@ type ResumeContainerProps = {
 export default function ResumeContainer({resumeId, resume, resumeData}: ResumeContainerProps) {
     const [content, setContent] = useState<ContentStateType[]>(resume)
     const [selectedFontStyle, setSelectedFontStyle] = useState<FontStylesType>("default")
-    const contentStates = {content, setContent}
+    const [isAiGenerating, setIsAiGenerating] = useState(false)
+    const contentStates = {content, setContent, isAiGenerating, setIsAiGenerating}
     const settingsStates = {selectedFontStyle, setSelectedFontStyle}
 
     // content

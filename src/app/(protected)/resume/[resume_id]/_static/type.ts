@@ -4,6 +4,9 @@ import {ChangeEvent, Dispatch, SetStateAction} from "react"
 export type ContentStatesType = {
     content: ContentStateType[]
     setContent: Dispatch<SetStateAction<ContentStateType[]>>
+    // While true, autosave stays off so a half-streamed resume never reaches the database.
+    isAiGenerating: boolean
+    setIsAiGenerating: Dispatch<SetStateAction<boolean>>
 }
 
 export type FontStylesType = "default" | "sans" | "mono" | "serif"

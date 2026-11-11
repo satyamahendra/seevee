@@ -131,7 +131,7 @@ export default function SettingsContainer({contentStates, settingsStates, resume
                         <div className="flex items-center justify-center w-8 h-8 aspect-square bg-muted rounded-lg border">
                             <PiMagicWandFill className="text-xl text-blue-500" />
                         </div>
-                        <div className="text-xs text-center text-muted-foreground">Use AI to Tailor your resume!</div>
+                        <div className="text-xs text-center text-muted-foreground">Tailor with AI</div>
                         <AiButton contentStates={contentStates} resumeId={resumeId} className="w-full px-3" />
                     </div>
 
@@ -214,7 +214,7 @@ export default function SettingsContainer({contentStates, settingsStates, resume
                         title="Are you sure?"
                     />
 
-                    <JsonButton contentStates={contentStates} />
+                    {/* <JsonButton contentStates={contentStates} /> */}
 
                     <ConfirmationPopover
                         button={
@@ -244,7 +244,9 @@ export default function SettingsContainer({contentStates, settingsStates, resume
                                     <PiMagicWandFill className="text-xl text-blue-500" />
                                 </div>
                                 <div className="mt-2 text-xs font-medium">AI Tailor</div>
-                                <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">Paste a job description and let AI rewrite your resume to match. Costs 1 credit.</p>
+                                <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
+                                    Tailor to a job, enhance from notes, or import an existing PDF. Costs 1 credit.
+                                </p>
                                 <AiButton contentStates={contentStates} resumeId={resumeId} className="mt-3 w-full" />
                             </div>
 
@@ -310,7 +312,7 @@ export default function SettingsContainer({contentStates, settingsStates, resume
                                 <Button onClick={handlePrintResume} variant="outline" className="w-full h-11 justify-center gap-3">
                                     <PiDownloadSimple className="size-5" /> Download resume
                                 </Button>
-                                <JsonButton contentStates={contentStates} variant="outline" />
+                                {/* <JsonButton contentStates={contentStates} variant="outline" /> */}
                                 <div className="grid grid-cols-2 gap-2">
                                     <ConfirmationPopover
                                         button={

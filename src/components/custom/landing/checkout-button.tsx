@@ -2,6 +2,7 @@
 
 import {Button} from "@/components/ui/button"
 import Link from "next/link"
+import {useRouter} from "next/navigation"
 import {useMutation} from "@tanstack/react-query"
 import axios from "axios"
 import {authClient} from "@/lib/auth-client"
@@ -9,14 +10,23 @@ import {handleClientError} from "@/utils/helpers/handle-client-errors"
 import {toast} from "sonner"
 import {Loader2} from "lucide-react"
 
-export default function CheckoutButton({productId}: {productId: string}) {
-    const {data: session} = authClient.useSession()
+// onBeforePay: lets a host modal close first, so its focus trap/pointer lock does not block the Snap popup
+export default function CheckoutButton({productId, onBeforePay}: {productId: string; onBeforePay?: () => void}) {
+    const {data: session, refetch} = authClient.useSession()
+    const router = useRouter()
 
     const {mutate, isPending} = useMutation({
         mutationFn: async () => await axios.post("/api/midtrans/token", {id_product: productId}),
         onSuccess: (data) => {
+            onBeforePay?.()
             window.snap.pay(data.data.data.token, {
-                onSuccess: () => toast.success("Payment successful!"),
+                onSuccess: async (result) => {
+                    toast.success("Payment successful!")
+                    // sync status (idempotent grant) so credits exist before the webhook lands, then reload session credits
+                    await axios.get(`/api/midtrans/status?order_id=${(result as {order_id: string}).order_id}`).catch(() => {})
+                    await refetch()
+                    router.refresh()
+                },
                 onError: () => toast.error("Something went wrong."),
             })
         },

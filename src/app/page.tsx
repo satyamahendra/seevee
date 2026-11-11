@@ -1,194 +1,341 @@
 import {authServer} from "@/lib/auth-server"
-import prisma from "@/lib/prisma/client"
+import {getActiveProducts} from "@/utils/services/get-active-products"
 import {Button} from "@/components/ui/button"
-import {Badge} from "@/components/ui/badge"
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion"
 import CheckoutButton from "@/components/custom/landing/checkout-button"
-import {formatNumberWithCommas} from "@/utils/helpers/formatNumberWithCommas"
-import {PiCoins, PiCube, PiFileText, PiMagicWand, PiShareNetwork, PiSparkle} from "react-icons/pi"
+import {formatIdr, formatUsd, usdCentsToIdr, usdToIdrRate} from "@/utils/helpers/format-usd"
+import {cn} from "@/lib/utils"
+import {PiArrowRight, PiCheck, PiDotsSixVertical, PiFilePdf, PiLinkSimple, PiMagicWand, PiShieldCheck, PiTranslate} from "react-icons/pi"
+import {CONTACT_EMAIL, LEGAL_LINKS, PAYMENT_METHODS} from "@/components/custom/legal-page"
+import {Familjen_Grotesk, Spectral} from "next/font/google"
 import Link from "next/link"
+import {siteUrl} from "@/utils/helpers/site-url"
+import type {ComponentType, ReactNode} from "react"
 
-const faqs = [
-    {
-        q: "How do credits work?",
-        a: "Every AI assist generation spends one credit. Buy a pack, and the credits are added to your account the moment the payment settles.",
-    },
-    {
-        q: "Can I translate my resume?",
-        a: "Yes. The AI assist accepts a job description to optimize for, a translation request, or any custom instruction you provide.",
-    },
-    {
-        q: "Can I share my resume?",
-        a: "Each resume can be toggled public, giving you a short shareable link anyone can open without signing in.",
-    },
-    {
-        q: "What happens if I run out of credits?",
-        a: "You simply buy another pack from the pricing section. Your resumes and data are never affected.",
-    },
+// Overrides --font-sans inside the landing page only, so shadcn buttons pick it up too.
+const grotesk = Familjen_Grotesk({subsets: ["latin"], variable: "--font-sans"})
+const spectral = Spectral({subsets: ["latin"], weight: ["400"], style: ["italic"], variable: "--font-paper"})
+
+const features: {icon: ComponentType<{className?: string}>; title: string; body: string}[] = [
+    {icon: PiMagicWand, title: "Tailored to each job", body: "Paste a job description. Every section is rewritten for it, without inventing facts."},
+    {icon: PiTranslate, title: "Any language", body: "Translate the whole resume in one pass."},
+    {icon: PiDotsSixVertical, title: "Your layout", body: "Reorder sections and pick a font."},
+    {icon: PiLinkSimple, title: "One link to share", body: "Recruiters open it without signing in."},
+    {icon: PiFilePdf, title: "Print to PDF", body: "Clean, single-column, ready to send."},
+]
+
+const steps = [
+    {title: "Write your resume once", body: "Fill in your experience, skills and summary. It's your master copy."},
+    {title: "Paste a job description", body: "Drop in the posting you're applying for, or give the AI your own instruction."},
+    {title: "Send the tailored version", body: "Share a link or print to PDF. Your master copy stays untouched for the next job."},
+]
+
+const FREE = ["Write and edit resumes", "Reorder sections, pick a font", "Public share link", "Print to PDF"]
+const PAID = ["Tailor to a job description", "Translate to another language", "Rewrite with your own instruction"]
+
+const faqs: {q: string; a: string}[] = [
+    {q: "What is a credit?", a: "One credit pays for one AI rewrite: tailoring to a job, translating, or following your own instruction. Everything else is free."},
+    {q: "Will the AI make up experience I don't have?", a: "No. It rewrites and reorders what you wrote so it matches the job. It doesn't add jobs, skills or numbers you didn't give it."},
+    {q: "Do recruiters need an account to see my resume?", a: "No. Your share link opens for anyone, no sign-in needed."},
+    {q: "How do I sign in?", a: "With your Google account. There is no separate password to remember."},
+    {q: "What currency am I charged in?", a: "Prices are shown in USD and charged in Indonesian Rupiah (IDR) through Midtrans, at the rate shown under Pricing. Each pack lists its exact IDR amount. If your card isn't in IDR, your bank converts the charge, so your statement may differ slightly."},
+    {q: "Can I get a refund?", a: "All purchases are final and credits are non-refundable, so start with a small pack if you want to try it first."},
 ]
 
 export default async function LandingPage() {
     const session = await authServer()
+    const startHref = session ? "/resume" : "/auth"
+    const startLabel = session ? "Open my resumes" : "Start for free"
 
-    const products = await prisma.product.findMany({
-        where: {is_active: true},
-        orderBy: {created_at: "asc"},
-        select: {
-            id: true,
-            name: true,
-            price_actual: true,
-            price_alternate: true,
-            credit: true,
-            type: true,
-            bundle_items: {select: {product: {select: {name: true}}}},
+    const productsRes = await getActiveProducts()
+    const products = productsRes.success ? productsRes.data : []
+    const perCredit = (p: (typeof products)[number]) => (p.credit > 0 ? p.price_actual / p.credit : Infinity)
+    // Highlight the cheapest-per-credit pack, only when there is something to compare against.
+    const bestId = products.length > 1 ? products.reduce((a, b) => (perCredit(b) < perCredit(a) ? b : a)).id : null
+    const rate = usdToIdrRate()
+
+    const jsonLd = [
+        {
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            name: "seevee",
+            url: siteUrl(),
+            applicationCategory: "BusinessApplication",
+            operatingSystem: "Web",
+            description: "AI-assisted resume builder: tailor your resume to each job, translate it, share it with one link, or print it to PDF.",
+            offers: {"@type": "Offer", price: "0", priceCurrency: "USD"},
         },
-    })
+        {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: faqs.map((f) => ({"@type": "Question", name: f.q, acceptedAnswer: {"@type": "Answer", text: f.a}})),
+        },
+    ]
 
     return (
-        <main className="flex flex-1 flex-col">
-            <header className="w-full border-b flex justify-center">
-                <div className="max-w-260 w-full flex items-center justify-between px-6 py-4">
-                    <Link href="/" className="flex items-center gap-2 text-lg tracking-tighter font-light">
-                        <div className="aspect-square w-3 h-3 rotate-45 rounded-xs bg-primary"></div>
+        <main className={cn("flex flex-1 flex-col font-sans text-ink", grotesk.variable, spectral.variable)}>
+            <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd).replace(/</g, "\\u003c")}} />
+            <div className="bg-desk">
+                {/* 1fr | auto | 1fr keeps the links centered on the page, whatever the logo and button widths. */}
+                <header className="mx-auto grid w-full max-w-360 grid-cols-[1fr_auto_1fr] items-center gap-6 px-6 py-5">
+                    <Link href="/" className="flex items-center gap-2 justify-self-start text-xl font-semibold tracking-tight">
+                        <span aria-hidden className="h-3 w-3 rotate-45 rounded-xs bg-linear-to-br from-brand to-brand-2" />
                         seevee
                     </Link>
-                    <nav className="flex gap-6 text-sm text-muted-foreground">
-                        <a href="#features" className="hover:text-foreground transition-colors">
-                            Features
-                        </a>
-                        <a href="#pricing" className="hover:text-foreground transition-colors">
-                            Pricing
-                        </a>
-                        <a href="#faq" className="hover:text-foreground transition-colors">
-                            FAQ
-                        </a>
+                    <nav className="flex items-center gap-6">
+                        <Link href="#how" className="hidden text-lg text-muted-foreground hover:text-ink sm:block">How it works</Link>
+                        <Link href="#pricing" className="hidden text-lg text-muted-foreground hover:text-ink sm:block">Pricing</Link>
+                        <Link href="#faq" className="hidden text-lg text-muted-foreground hover:text-ink sm:block">FAQ</Link>
                     </nav>
-                    <Link href={session ? "/resume" : "/auth"}>
-                        <Button size="sm" variant="outline">
-                            {session ? "Dashboard" : "Sign in"}
-                        </Button>
-                    </Link>
-                </div>
-            </header>
+                    <Button asChild size="lg" variant="outline" className="justify-self-end text-base">
+                        <Link href={startHref}>{session ? "My resumes" : "Sign in"}</Link>
+                    </Button>
+                </header>
 
-            <section className="flex flex-col items-center text-center px-6 py-24 gap-6">
-                <Badge variant="secondary" className="rounded-full gap-1">
-                    <PiSparkle /> AI-assisted resume builder
-                </Badge>
-                <h1 className="max-w-3xl text-5xl sm:text-6xl tracking-tighter font-light leading-[1.05]">
-                    Build a resume that gets <span className="text-primary">seen</span>.
-                </h1>
-                <p className="max-w-xl text-muted-foreground">
-                    Design, optimize, and share a standout resume in minutes. Use AI to tailor it to any job description, then share one clean link.
-                </p>
-                <div className="flex gap-3">
-                    <Link href="/auth">
-                        <Button size="lg">Start building</Button>
-                    </Link>
-                    <a href="#pricing">
-                        <Button size="lg" variant="outline">
-                            View pricing
-                        </Button>
-                    </a>
+                <section className="mx-auto flex w-full max-w-360 flex-col items-center px-6 pt-14 pb-20 text-center lg:pt-20">
+                    <span className="mb-6 inline-flex items-center gap-2 rounded-full border bg-paper px-3 py-1 text-base text-muted-foreground">
+                        <span aria-hidden className="size-2 rounded-full bg-linear-to-r from-brand to-brand-2" />
+                        AI resume tailoring
+                    </span>
+                    <h1 className="max-w-4xl text-[3.75rem] leading-[0.98] font-semibold tracking-[-0.035em] text-balance sm:text-[6rem]">
+                        Your resume, rewritten for{" "}
+                        <span className="bg-linear-to-r from-brand to-brand-2 bg-clip-text pr-1 font-paper font-normal text-transparent italic">every</span> job.
+                    </h1>
+                    <p className="mt-6 max-w-lg text-xl leading-relaxed text-pretty text-muted-foreground">
+                        Paste a job description. Get a tailored resume and a link to share, in seconds.
+                    </p>
+                    <Button asChild size="lg" className="mt-9 h-12 bg-ink px-6 text-lg text-paper hover:bg-ink/85">
+                        <Link href={startHref}>
+                            {startLabel} <PiArrowRight aria-hidden />
+                        </Link>
+                    </Button>
+                    <p className="mt-4 text-base text-muted-foreground">Free to write and share. Pay only for AI rewrites.</p>
+
+                    <video
+                        src="/seevee%20edited.mp4"
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        aria-label="seevee tailoring a resume with AI"
+                        // shortcut: crops the 24px black bars baked into the 1080x1080 file; drop aspect/object-cover after re-exporting without them.
+                        className="mt-16 aspect-[1080/1032] w-full max-w-6xl rounded-xl object-cover"
+                    />
+                </section>
+            </div>
+
+            <section id="how" className="mx-auto w-full max-w-360 scroll-mt-6 px-6 py-24">
+                <SectionTitle eyebrow="How it works" title="Three steps, one resume per job" />
+                <ol className="mx-auto mt-12 grid max-w-6xl gap-8 sm:grid-cols-3">
+                    {steps.map((step, i) => (
+                        <li key={step.title} className="border-t pt-6">
+                            <span className="font-paper text-4xl text-brand italic">0{i + 1}</span>
+                            <h3 className="mt-3 text-xl font-semibold tracking-tight">{step.title}</h3>
+                            <p className="mt-1 text-lg leading-relaxed text-muted-foreground">{step.body}</p>
+                        </li>
+                    ))}
+                </ol>
+            </section>
+
+            <section className="border-t bg-desk">
+                <div className="mx-auto w-full max-w-360 px-6 py-24">
+                    <SectionTitle eyebrow="Example" title="Same facts, aimed at the job" />
+                    <p className="mx-auto mt-3 max-w-xl text-center text-lg text-muted-foreground">
+                        Job ad: <span className="text-ink">&ldquo;Looking for a React developer who cares about performance and code quality.&rdquo;</span>
+                    </p>
+                    <div className="mx-auto mt-12 grid max-w-5xl items-center gap-4 md:grid-cols-[1fr_auto_1fr]">
+                        <ExampleCard label="Before">Worked on the company website. Fixed bugs and helped make pages load faster. Used React and wrote some tests.</ExampleCard>
+                        <PiArrowRight aria-hidden className="mx-auto rotate-90 text-2xl text-muted-foreground md:rotate-0" />
+                        <ExampleCard label="After" accent>
+                            Built and maintained the company website in <Hl>React</Hl>, focused on <Hl>page performance</Hl> and fixing bugs, backed by tests for{" "}
+                            <Hl>code quality</Hl>.
+                        </ExampleCard>
+                    </div>
                 </div>
             </section>
 
-            <section id="features" className="max-w-260 w-full mx-auto px-6 pb-20">
-                <div className="grid sm:grid-cols-3 gap-4">
-                    <div className="border rounded-xl p-6 space-y-3">
-                        <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-muted text-xl">
-                            <PiMagicWand />
-                        </div>
-                        <h3 className="font-medium">AI Assist</h3>
-                        <p className="text-sm text-muted-foreground">
-                            Optimize for a job description, translate, or rewrite — the AI keeps your structure intact and fills every section.
+            <section className="mx-auto w-full max-w-360 px-6 py-24">
+                <SectionTitle eyebrow="Features" title="What you get" />
+                <ul className="mx-auto mt-12 grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-5">
+                    {features.map(({icon: Icon, title, body}) => (
+                        <li key={title} className="rounded-xl border bg-paper p-6">
+                            <Icon aria-hidden className="text-3xl text-brand" />
+                            <h3 className="mt-3 text-xl font-semibold tracking-tight">{title}</h3>
+                            <p className="mt-1 text-lg leading-relaxed text-muted-foreground">{body}</p>
+                        </li>
+                    ))}
+                </ul>
+
+                <div className="mx-auto mt-16 grid max-w-4xl gap-4 sm:grid-cols-2">
+                    <PlanList title="Free, forever" items={FREE} />
+                    <PlanList title="With credits" items={PAID} accent />
+                </div>
+            </section>
+
+            <section id="pricing" className="scroll-mt-6 border-t bg-desk">
+                <div className="mx-auto w-full max-w-360 px-6 py-24">
+                    <SectionTitle eyebrow="Pricing" title="Pay per rewrite" />
+                    <p className="mt-3 text-center text-lg text-muted-foreground">1 credit = 1 AI rewrite. No subscription.</p>
+
+                    {products.length === 0 ? (
+                        <p className="mt-12 text-center text-lg text-muted-foreground">Credit packs are not on sale yet. Check back soon.</p>
+                    ) : (
+                        <ul className="mx-auto mt-12 grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                            {products.map((product) => {
+                                const best = product.id === bestId
+                                return (
+                                    <li key={product.id} className={cn("relative flex flex-col rounded-xl border bg-paper p-8", best && "border-brand")}>
+                                        {best && (
+                                            <span className="absolute -top-3 left-8 rounded-full bg-linear-to-r from-brand to-brand-2 px-3 py-1 text-sm font-medium text-white">
+                                                Best value
+                                            </span>
+                                        )}
+                                        <h3 className="text-xl font-semibold tracking-tight">{product.name}</h3>
+                                        <div className="mt-4 flex items-baseline gap-2">
+                                            <span className="text-[2.75rem] leading-none font-semibold tracking-tight tabular-nums">
+                                                {formatUsd(product.price_actual)}
+                                            </span>
+                                            {product.price_alternate > product.price_actual && (
+                                                <span className="text-lg text-muted-foreground line-through">{formatUsd(product.price_alternate)}</span>
+                                            )}
+                                        </div>
+                                        {rate && (
+                                            <p className="mt-2 text-base text-muted-foreground tabular-nums">
+                                                Charged as {formatIdr(usdCentsToIdr(product.price_actual))}
+                                            </p>
+                                        )}
+                                        <ul className="mt-6 mb-8 space-y-2 text-lg">
+                                            <li className="flex items-center gap-2">
+                                                <PiCheck aria-hidden />
+                                                {product.credit} AI rewrites
+                                            </li>
+                                            {product.credit > 0 && (
+                                                <li className="flex items-center gap-2 text-muted-foreground">
+                                                    <PiCheck aria-hidden />
+                                                    {formatUsd(Math.round(perCredit(product)))} each
+                                                </li>
+                                            )}
+                                            {product.type === "bundle" &&
+                                                product.bundle_items.map((item) => (
+                                                    <li key={item.product.name} className="flex items-center gap-2 text-muted-foreground">
+                                                        <PiCheck aria-hidden />
+                                                        Includes {item.product.name}
+                                                    </li>
+                                                ))}
+                                        </ul>
+                                        <div className="mt-auto">
+                                            <CheckoutButton productId={product.id} />
+                                        </div>
+                                    </li>
+                                )
+                            })}
+                        </ul>
+                    )}
+
+                    <div className="mx-auto mt-10 flex max-w-6xl flex-col items-center gap-4 text-center">
+                        <p className="flex items-center gap-2 text-lg">
+                            <PiShieldCheck aria-hidden className="text-xl" />
+                            Secure checkout by Midtrans. We never see or store your card details.
                         </p>
-                    </div>
-                    <div className="border rounded-xl p-6 space-y-3">
-                        <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-muted text-xl">
-                            <PiFileText />
-                        </div>
-                        <h3 className="font-medium">Flexible blocks</h3>
-                        <p className="text-sm text-muted-foreground">
-                            Compose from header, summary, skills, and general sections — reorder anything and pick your font.
-                        </p>
-                    </div>
-                    <div className="border rounded-xl p-6 space-y-3">
-                        <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-muted text-xl">
-                            <PiShareNetwork />
-                        </div>
-                        <h3 className="font-medium">One link to share</h3>
-                        <p className="text-sm text-muted-foreground">
-                            Flip a resume public and get a short link anyone can open — no sign-in required to view.
+                        <ul aria-label="Payment methods" className="flex flex-wrap justify-center gap-2">
+                            {PAYMENT_METHODS.map((m) => (
+                                <li key={m} className="rounded-md border bg-paper px-3 py-1.5 text-base text-muted-foreground">
+                                    {m}
+                                </li>
+                            ))}
+                        </ul>
+                        <p className="text-base text-muted-foreground">
+                            Prices in USD, charged in IDR{rate && <> at 1 USD = {formatIdr(rate)}</>}. If your card isn&apos;t in IDR, your bank converts it. Credits
+                            are added right after payment. All purchases are final.{" "}
+                            <Link href="/terms#payment" className="underline underline-offset-4 hover:text-ink">
+                                Payment terms
+                            </Link>
                         </p>
                     </div>
                 </div>
             </section>
 
-            <section id="pricing" className="border-t flex justify-center py-20">
-                <div className="max-w-260 w-full px-6 flex flex-col items-center gap-8">
-                    <div className="text-center space-y-2">
-                        <h2 className="text-3xl tracking-tighter font-light">Pricing</h2>
-                        <p className="text-muted-foreground text-sm">Credit packs — one credit per AI assist generation.</p>
-                    </div>
-                    <div className="grid sm:grid-cols-3 md:grid-cols-4 w-full gap-4">
-                        {products.map((product) => (
-                            <div key={product.id} className="border rounded-xl p-6 flex flex-col gap-4 bg-card">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="font-medium">{product.name}</h3>
-                                    {product.type === "bundle" && (
-                                        <Badge variant="secondary">
-                                            <PiCube /> bundle
-                                        </Badge>
-                                    )}
-                                </div>
-                                <div className="flex items-baseline gap-2">
-                                    <span className="text-3xl font-light">Rp{formatNumberWithCommas(product.price_actual)}</span>
-                                    {product.price_alternate > 0 && (
-                                        <span className="text-sm text-muted-foreground line-through">
-                                            Rp{formatNumberWithCommas(product.price_alternate)}
-                                        </span>
-                                    )}
-                                </div>
-                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                    <PiCoins /> {product.credit} credits
-                                </div>
-                                {product.type === "bundle" && product.bundle_items.length > 0 && (
-                                    <ul className="text-xs text-muted-foreground space-y-0.5">
-                                        {product.bundle_items.map((item) => (
-                                            <li key={item.product.name}>· {item.product.name}</li>
-                                        ))}
-                                    </ul>
-                                )}
-                                <div className="mt-auto">
-                                    <CheckoutButton productId={product.id} />
-                                </div>
-                            </div>
+            <section id="faq" className="mx-auto w-full max-w-360 scroll-mt-6 px-6 py-24">
+                <SectionTitle eyebrow="FAQ" title="Questions, answered" />
+                <Accordion type="single" collapsible className="mx-auto mt-12 max-w-3xl">
+                    {faqs.map((f) => (
+                        <AccordionItem key={f.q} value={f.q}>
+                            <AccordionTrigger className="text-lg">{f.q}</AccordionTrigger>
+                            <AccordionContent className="text-lg leading-relaxed text-muted-foreground">{f.a}</AccordionContent>
+                        </AccordionItem>
+                    ))}
+                </Accordion>
+            </section>
+
+            <section className="border-t bg-desk">
+                <div className="mx-auto flex w-full max-w-360 flex-col items-center px-6 py-24 text-center">
+                    <h2 className="max-w-2xl text-[2.75rem] leading-tight font-semibold tracking-tight text-balance">
+                        Your next application deserves its own resume.
+                    </h2>
+                    <span aria-hidden className="mt-6 h-1 w-16 rounded-full bg-linear-to-r from-brand to-brand-2" />
+                    <Button asChild size="lg" className="mt-8 h-12 bg-ink px-6 text-lg text-paper hover:bg-ink/85">
+                        <Link href={startHref}>
+                            {startLabel} <PiArrowRight aria-hidden />
+                        </Link>
+                    </Button>
+                </div>
+            </section>
+
+            <footer className="border-t">
+                <div className="mx-auto flex w-full max-w-360 flex-wrap items-center justify-between gap-4 px-6 py-8 text-lg text-muted-foreground">
+                    <span>
+                        Â© {new Date().getFullYear()} seevee Â·{" "}
+                        <a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-ink">
+                            {CONTACT_EMAIL}
+                        </a>
+                    </span>
+                    <nav aria-label="Legal" className="flex flex-wrap gap-6">
+                        {LEGAL_LINKS.map((l) => (
+                            <Link key={l.href} href={l.href} className="hover:text-ink">
+                                {l.label}
+                            </Link>
                         ))}
-                    </div>
-                </div>
-            </section>
-
-            <section id="faq" className="border-t flex justify-center py-20">
-                <div className="max-w-2xl w-full px-6 flex flex-col gap-8">
-                    <h2 className="text-3xl tracking-tighter font-light text-center">FAQ</h2>
-                    <Accordion type="single" collapsible>
-                        {faqs.map((faq) => (
-                            <AccordionItem key={faq.q} value={faq.q}>
-                                <AccordionTrigger>{faq.q}</AccordionTrigger>
-                                <AccordionContent>{faq.a}</AccordionContent>
-                            </AccordionItem>
-                        ))}
-                    </Accordion>
-                </div>
-            </section>
-
-            <footer className="border-t flex justify-center py-8">
-                <div className="max-w-260 w-full px-6 flex items-center justify-between text-sm text-muted-foreground">
-                    <span>© {new Date().getFullYear()} seevee</span>
-                    <Link href={session ? "/resume" : "/auth"}>Get started</Link>
+                    </nav>
                 </div>
             </footer>
         </main>
+    )
+}
+
+function SectionTitle({eyebrow, title}: {eyebrow: string; title: string}) {
+    return (
+        <div className="text-center">
+            <p className="text-base font-medium tracking-wide text-brand uppercase">{eyebrow}</p>
+            <h2 className="mt-2 text-[2.75rem] leading-tight font-semibold tracking-tight text-balance">{title}</h2>
+        </div>
+    )
+}
+
+function ExampleCard({label, accent, children}: {label: string; accent?: boolean; children: ReactNode}) {
+    return (
+        <div className={cn("rounded-xl border bg-paper p-6 text-left", accent && "border-brand/40")}>
+            <p className={cn("text-sm font-medium tracking-wide uppercase", accent ? "text-brand" : "text-muted-foreground")}>{label}</p>
+            <p className="mt-3 text-lg leading-relaxed">{children}</p>
+        </div>
+    )
+}
+
+function Hl({children}: {children: ReactNode}) {
+    return <span className="rounded-sm bg-brand/10 px-1 text-brand">{children}</span>
+}
+
+function PlanList({title, items, accent}: {title: string; items: string[]; accent?: boolean}) {
+    return (
+        <div className={cn("rounded-xl border p-6", accent && "border-brand/40")}>
+            <h3 className="text-xl font-semibold tracking-tight">{title}</h3>
+            <ul className="mt-4 space-y-2 text-lg">
+                {items.map((item) => (
+                    <li key={item} className="flex items-center gap-2">
+                        <PiCheck aria-hidden className={accent ? "text-brand" : "text-muted-foreground"} />
+                        {item}
+                    </li>
+                ))}
+            </ul>
+        </div>
     )
 }
