@@ -1,6 +1,6 @@
 import {authServer} from "@/lib/auth-server"
 import prisma from "@/lib/prisma/client"
-import {gemini, geminiModel} from "@/lib/gemini/gemini"
+import {getGemini, geminiModel} from "@/lib/gemini/gemini"
 import {ThinkingLevel} from "@google/genai"
 import {buildAiTailorPrompt} from "@/utils/helpers/generatePrompt"
 import {pdfToText} from "@/utils/helpers/pdfToText"
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
                     // No first token within 45s (SDK retries included) means the model is stuck; fail fast instead of hanging.
                     const abort = new AbortController()
                     firstTokenTimer = setTimeout(() => abort.abort(), 45_000)
-                    const chunks = await gemini.models.generateContentStream({
+                    const chunks = await getGemini().models.generateContentStream({
                         model: geminiModel,
                         contents,
                         config: {
