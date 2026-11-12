@@ -131,7 +131,7 @@ export default async function LandingPage() {
                         playsInline
                         aria-label="seevee tailoring a resume with AI"
                         // shortcut: crops the 24px black bars baked into the 1080x1080 file; drop aspect/object-cover after re-exporting without them.
-                        className="mt-16 aspect-[1080/1032] w-full max-w-6xl rounded-xl object-cover"
+                        className="mt-16 aspect-1080/1032 w-full max-w-6xl rounded-xl object-cover"
                     />
                 </section>
             </div>
