@@ -35,10 +35,16 @@ const PAID = ["Tailor to a job description", "Translate to another language", "R
 
 const faqs: {q: string; a: string}[] = [
     {q: "What is a credit?", a: "One credit pays for one AI rewrite: tailoring to a job, translating, or following your own instruction. Everything else is free."},
-    {q: "Will the AI make up experience I don't have?", a: "No. It rewrites and reorders what you wrote so it matches the job. It doesn't add jobs, skills or numbers you didn't give it."},
+    {
+        q: "Will the AI make up experience I don't have?",
+        a: "No. It rewrites and reorders what you wrote so it matches the job. It doesn't add jobs, skills or numbers you didn't give it.",
+    },
     {q: "Do recruiters need an account to see my resume?", a: "No. Your share link opens for anyone, no sign-in needed."},
     {q: "How do I sign in?", a: "With your Google account. There is no separate password to remember."},
-    {q: "What currency am I charged in?", a: "Prices are shown in USD and charged in Indonesian Rupiah (IDR) through Midtrans, at the rate shown under Pricing. Each pack lists its exact IDR amount. If your card isn't in IDR, your bank converts the charge, so your statement may differ slightly."},
+    {
+        q: "What currency am I charged in?",
+        a: "Prices are shown in USD and charged in Indonesian Rupiah (IDR) through Midtrans, at the rate shown under Pricing. Each pack lists its exact IDR amount. If your card isn't in IDR, your bank converts the charge, so your statement may differ slightly.",
+    },
     {q: "Can I get a refund?", a: "All purchases are final and credits are non-refundable, so start with a small pack if you want to try it first."},
 ]
 
@@ -83,9 +89,15 @@ export default async function LandingPage() {
                         seevee
                     </Link>
                     <nav className="flex items-center gap-6">
-                        <Link href="#how" className="hidden text-lg text-muted-foreground hover:text-ink sm:block">How it works</Link>
-                        <Link href="#pricing" className="hidden text-lg text-muted-foreground hover:text-ink sm:block">Pricing</Link>
-                        <Link href="#faq" className="hidden text-lg text-muted-foreground hover:text-ink sm:block">FAQ</Link>
+                        <Link href="#how" className="hidden text-lg text-muted-foreground hover:text-ink sm:block">
+                            How it works
+                        </Link>
+                        <Link href="#pricing" className="hidden text-lg text-muted-foreground hover:text-ink sm:block">
+                            Pricing
+                        </Link>
+                        <Link href="#faq" className="hidden text-lg text-muted-foreground hover:text-ink sm:block">
+                            FAQ
+                        </Link>
                     </nav>
                     <Button asChild size="lg" variant="outline" className="justify-self-end text-base">
                         <Link href={startHref}>{session ? "My resumes" : "Sign in"}</Link>
@@ -144,7 +156,9 @@ export default async function LandingPage() {
                         Job ad: <span className="text-ink">&ldquo;Looking for a React developer who cares about performance and code quality.&rdquo;</span>
                     </p>
                     <div className="mx-auto mt-12 grid max-w-5xl items-center gap-4 md:grid-cols-[1fr_auto_1fr]">
-                        <ExampleCard label="Before">Worked on the company website. Fixed bugs and helped make pages load faster. Used React and wrote some tests.</ExampleCard>
+                        <ExampleCard label="Before">
+                            Worked on the company website. Fixed bugs and helped make pages load faster. Used React and wrote some tests.
+                        </ExampleCard>
                         <PiArrowRight aria-hidden className="mx-auto rotate-90 text-2xl text-muted-foreground md:rotate-0" />
                         <ExampleCard label="After" accent>
                             Built and maintained the company website in <Hl>React</Hl>, focused on <Hl>page performance</Hl> and fixing bugs, backed by tests for{" "}
@@ -245,8 +259,8 @@ export default async function LandingPage() {
                             ))}
                         </ul>
                         <p className="text-base text-muted-foreground">
-                            Prices in USD, charged in IDR{rate && <> at 1 USD = {formatIdr(rate)}</>}. If your card isn&apos;t in IDR, your bank converts it. Credits
-                            are added right after payment. All purchases are final.{" "}
+                            Prices in USD, charged in IDR{rate && <> at 1 USD = {formatIdr(rate)}</>}. If your card isn&apos;t in IDR, your bank converts it. Credits are
+                            added right after payment. All purchases are final.{" "}
                             <Link href="/terms#payment" className="underline underline-offset-4 hover:text-ink">
                                 Payment terms
                             </Link>
@@ -269,9 +283,7 @@ export default async function LandingPage() {
 
             <section className="border-t bg-desk">
                 <div className="mx-auto flex w-full max-w-360 flex-col items-center px-6 py-24 text-center">
-                    <h2 className="max-w-2xl text-[2.75rem] leading-tight font-semibold tracking-tight text-balance">
-                        Your next application deserves its own resume.
-                    </h2>
+                    <h2 className="max-w-2xl text-[2.75rem] leading-tight font-semibold tracking-tight text-balance">Your next application deserves its own resume.</h2>
                     <span aria-hidden className="mt-6 h-1 w-16 rounded-full bg-linear-to-r from-brand to-brand-2" />
                     <Button asChild size="lg" className="mt-8 h-12 bg-ink px-6 text-lg text-paper hover:bg-ink/85">
                         <Link href={startHref}>
@@ -284,7 +296,7 @@ export default async function LandingPage() {
             <footer className="border-t">
                 <div className="mx-auto flex w-full max-w-360 flex-wrap items-center justify-between gap-4 px-6 py-8 text-lg text-muted-foreground">
                     <span>
-                        Â© {new Date().getFullYear()} seevee Â·{" "}
+                        © {new Date().getFullYear()} seevee ·{" "}
                         <a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-ink">
                             {CONTACT_EMAIL}
                         </a>
