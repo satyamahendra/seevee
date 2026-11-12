@@ -47,9 +47,6 @@ jobs:
                   context: .
                   push: true
                   target: migrator
-                  # Only `:latest` — the migrator is static per prisma version, so
-                  # a per-SHA tag would push a new manifest on every release for
-                  # an image whose content never changed.
                   tags: ghcr.io/satyamahendra/seevee-migrator:latest
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
@@ -72,7 +69,8 @@ jobs:
                       BETTER_AUTH_SECRET,BETTER_AUTH_URL,
                       GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,
                       MIDTRANS_SERVER_KEY,MIDTRANS_IS_PRODUCTION,
-                      WHITELISTED_EMAILS
+                      WHITELISTED_EMAILS,
+                      GEMINI_API_KEY,GEMINI_MODEL,USD_TO_IDR
                   script: |
                       # 1. Log into GHCR
                       echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
@@ -85,9 +83,8 @@ jobs:
                       #    immutable, so the pull can't race a concurrent release.
                       docker pull ghcr.io/satyamahendra/seevee:$APP_TAG
 
-                      # 3b. Migrator is static across releases; only fetch it once.
-                      docker image inspect ghcr.io/satyamahendra/seevee-migrator:latest >/dev/null 2>&1 \
-                        || docker pull ghcr.io/satyamahendra/seevee-migrator:latest
+                      # 3b. Always pull: the migrator image bakes in prisma/migrations.
+                      docker pull ghcr.io/satyamahendra/seevee-migrator:latest
 
                       # 4. Stop and remove old instances safely
                       docker stop seevee-app seevee-db || true
@@ -129,6 +126,9 @@ jobs:
                       -e MIDTRANS_SERVER_KEY="$MIDTRANS_SERVER_KEY" \
                       -e MIDTRANS_IS_PRODUCTION="$MIDTRANS_IS_PRODUCTION" \
                       -e WHITELISTED_EMAILS="$WHITELISTED_EMAILS" \
+                      -e GEMINI_API_KEY="$GEMINI_API_KEY" \
+                      -e GEMINI_MODEL="$GEMINI_MODEL" \
+                      -e USD_TO_IDR="$USD_TO_IDR" \
                       ghcr.io/satyamahendra/seevee:"$APP_TAG"
 
                       # 8. Clean up old dangling images
@@ -149,3 +149,6 @@ jobs:
                   MIDTRANS_SERVER_KEY: ${{ secrets.MIDTRANS_SERVER_KEY }}
                   MIDTRANS_IS_PRODUCTION: ${{ secrets.MIDTRANS_IS_PRODUCTION }}
                   WHITELISTED_EMAILS: ${{ secrets.WHITELISTED_EMAILS }}
+                  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+                  GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
+                  USD_TO_IDR: ${{ secrets.USD_TO_IDR }}
