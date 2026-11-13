@@ -10,6 +10,7 @@ export const auth = betterAuth({
         provider: "postgresql",
     }),
     baseURL: process.env.BETTER_AUTH_URL,
+    emailAndPassword: {enabled: true},
     socialProviders: {
         google: {
             clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -23,7 +24,8 @@ export const auth = betterAuth({
                     let role_name = "member"
 
                     const whitelist = (process.env.WHITELISTED_EMAILS ?? "").split(",").map((email) => email.trim().toLowerCase())
-                    if (whitelist.includes(user.email?.trim().toLowerCase())) {
+                    // emailVerified: password signups are unverified, so typing a whitelisted email must not grant admin
+                    if (user.emailVerified && whitelist.includes(user.email?.trim().toLowerCase())) {
                         role_name = "admin"
                     }
 

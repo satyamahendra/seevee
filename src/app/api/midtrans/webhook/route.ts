@@ -37,7 +37,8 @@ export async function POST(req: NextRequest) {
             where: {midtrans_order_id: midtransOrderId},
         })
 
-        if (!order) throw new Error("Order not found")
+        // signature already verified; Midtrans test pings use a fake order_id, so ack with 200 instead of triggering retries
+        if (!order) return apiSuccess(null, "Order not found, ignored", 200)
         if (Number(transaction.gross_amount) !== order.gross_amount) throw new Error("Amount mismatch")
 
         await prisma.$transaction(async (tx) => {
