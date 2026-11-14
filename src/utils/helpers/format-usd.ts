@@ -10,6 +10,12 @@ export function usdToIdrRate() {
     return Number.isFinite(rate) && rate > 0 ? rate : null
 }
 
+// shortcut: orders store IDR only, so USD is re-derived at the current rate; store usd_cents on Order if the rate ever changes
+export function idrToUsdCents(idr: number) {
+    const rate = usdToIdrRate()
+    return rate ? Math.round((idr / rate) * 100) : null
+}
+
 export function usdCentsToIdr(cents: number) {
     const rate = usdToIdrRate()
     if (!rate) throw new Error("USD_TO_IDR is not configured")

@@ -30,7 +30,7 @@ const steps = [
     {title: "Send the tailored version", body: "Share a link or print to PDF. Your master copy stays untouched for the next job."},
 ]
 
-const FREE = ["Write and edit resumes", "Reorder sections, pick a font", "Public share link", "Print to PDF"]
+const FREE = ["Write and edit up to 50 resumes", "Reorder sections, pick a font", "Public share link", "Print to PDF"]
 const PAID = ["Tailor to a job description", "Translate to another language", "Rewrite with your own instruction"]
 
 const faqs: {q: string; a: string}[] = [

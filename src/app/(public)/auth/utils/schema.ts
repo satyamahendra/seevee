@@ -6,8 +6,4 @@ export const signInSchema = z.object({
     password: z.string().min(8, "At least 8 characters").max(128),
 })
 
-export const signUpSchema = signInSchema.extend({
-    name: z.string().trim().min(1, "Enter your name").max(100),
-})
-
-export type SignUpFormSchema = z.input<typeof signUpSchema>
+export type SignInFormSchema = z.input<typeof signInSchema>

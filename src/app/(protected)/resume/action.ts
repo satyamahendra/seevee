@@ -3,6 +3,7 @@
 import {authServer} from "@/lib/auth-server"
 import prisma from "@/lib/prisma/client"
 import {revalidatePath} from "next/cache"
+import {MAX_RESUMES} from "@/utils/constants/resume"
 
 export type ResumeRow = {
     id: string
@@ -37,10 +38,17 @@ export async function createResume() {
 
         if (!session) return {error: "Unauthorized"}
 
-        const resumeData = await prisma.resume.create({
-            data: {userId: session.user.id, data: []},
-            select: {id: true},
+        const userId = session.user.id
+        const resumeData = await prisma.$transaction(async (tx) => {
+            // serialize per-user creates so concurrent clicks cannot slip past the count
+            await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${userId}))`
+            if ((await tx.resume.count({where: {userId}})) >= MAX_RESUMES) return null
+            return tx.resume.create({data: {userId, data: []}, select: {id: true}})
         })
+
+        if (!resumeData) return {error: `You've reached the limit of ${MAX_RESUMES} resumes. Delete one to create a new one.`}
+
+        revalidatePath("/resume")
 
         return {data: resumeData}
     } catch (error) {

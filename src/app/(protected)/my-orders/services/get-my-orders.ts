@@ -4,6 +4,7 @@ import {Prisma} from "@/generated/index"
 import {authServer} from "@/lib/auth-server"
 import prisma from "@/lib/prisma/client"
 import {PAGE_SIZE} from "@/utils/constants/pagination"
+import {idrToUsdCents} from "@/utils/helpers/format-usd"
 import {handleServerError} from "@/utils/helpers/handle-server-errors"
 import {Pagination} from "@/utils/types/pagination"
 import {ServerResult} from "@/utils/types/server-action"
@@ -12,13 +13,14 @@ const myOrderSelect = Prisma.validator<Prisma.OrderSelect>()({
     id: true,
     midtrans_order_id: true,
     midtrans_redirect: true,
+    midtrans_token: true,
     gross_amount: true,
     status: true,
     paid_at: true,
     created_at: true,
 })
 
-export type MyOrder = Prisma.OrderGetPayload<{select: typeof myOrderSelect}>
+export type MyOrder = Prisma.OrderGetPayload<{select: typeof myOrderSelect}> & {usd_cents: number | null}
 
 export type GetMyOrders = {
     orders: MyOrder[]
@@ -45,7 +47,7 @@ export async function getMyOrders(page: number = 1, search = ""): Promise<Server
         return {
             success: true,
             message: "Orders fetched successfully",
-            data: {orders, pagination: {page, total, pageCount: Math.ceil(total / PAGE_SIZE)}},
+            data: {orders: orders.map((o) => ({...o, usd_cents: idrToUsdCents(o.gross_amount)})), pagination: {page, total, pageCount: Math.ceil(total / PAGE_SIZE)}},
         }
     } catch (error) {
         return handleServerError(error)

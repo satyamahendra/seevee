@@ -1,6 +1,11 @@
 "use client"
 
+import {useState} from "react"
 import {Controller, useForm} from "react-hook-form"
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
+import AnimDiv from "@/components/custom/anim-div"
+import UserResumesTab from "./user-resumes-tab"
+import UserActivityTab from "./user-activity-tab"
 import {PiUser} from "react-icons/pi"
 import {Button} from "@/components/ui/button"
 import {Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle} from "@/components/ui/drawer"
@@ -25,6 +30,7 @@ const UserDetailModal = () => {
     const {isMobile} = useScreenSize()
 
     const view = getParam("view")
+    const [tab, setTab] = useState("access")
 
     const {data: userData, isLoading} = useQuery({
         queryKey: ["user", view],
@@ -70,7 +76,11 @@ const UserDetailModal = () => {
     }
 
     return (
-        <Drawer swipeDirection={isMobile ? "down" : "right"} open={!!view} onOpenChange={(open) => !open && setParams({view: ""})}>
+        <Drawer swipeDirection={isMobile ? "down" : "right"} open={!!view} onOpenChange={(open) => {
+                if (open) return
+                setParams({view: ""})
+                setTab("access")
+            }}>
             <DrawerContent aria-describedby="user-form" className={cn(isMobile ? "h-[80vh]" : "")}>
                 <DrawerHeader className="flex flex-col items-center justify-center">
                     <DrawerTitle className="flex items-center gap-4">
@@ -102,7 +112,16 @@ const UserDetailModal = () => {
                             </EmptyHeader>
                         </Empty>
                     ) : (
-                        <>
+                        <Tabs value={tab} onValueChange={setTab}>
+                            <TabsList variant="line" className="w-full">
+                                <TabsTrigger value="access">Access</TabsTrigger>
+                                <TabsTrigger value="resumes">Resumes</TabsTrigger>
+                                <TabsTrigger value="activity">Activity</TabsTrigger>
+                            </TabsList>
+
+                            {/* inactive tabs unmount, so AnimDiv replays on every switch and the data tabs only fetch once opened; unsaved Access edits survive because the form state lives in useForm above */}
+                            <TabsContent value="access" className="pt-4">
+                            <AnimDiv>
                             <form id="user-form" onSubmit={form.handleSubmit(onSubmit)} className={isPending ? "pointer-events-none opacity-50" : ""}>
                                 <FieldGroup>
                                     <Controller
@@ -176,21 +195,36 @@ const UserDetailModal = () => {
                                     />
                                 </FieldGroup>
                             </form>
-                        </>
+                            </AnimDiv>
+                            </TabsContent>
+
+                            <TabsContent value="resumes" className="pt-4">
+                                <AnimDiv>
+                                    <UserResumesTab userId={view!} />
+                                </AnimDiv>
+                            </TabsContent>
+                            <TabsContent value="activity" className="pt-4">
+                                <AnimDiv>
+                                    <UserActivityTab userId={view!} />
+                                </AnimDiv>
+                            </TabsContent>
+                        </Tabs>
                     )}
                 </div>
 
-                <DrawerFooter>
-                    <DrawerClose
-                        render={
-                            <Button variant="outline" className="w-full">
-                                Cancel
-                            </Button>
-                        }></DrawerClose>
-                    <Button disabled={isPending} type="submit" form="user-form">
-                        {isPending ? <Loader2 className="animate-spin" /> : "Submit"}
-                    </Button>
-                </DrawerFooter>
+                {tab === "access" && (
+                    <DrawerFooter>
+                        <DrawerClose
+                            render={
+                                <Button variant="outline" className="w-full">
+                                    Cancel
+                                </Button>
+                            }></DrawerClose>
+                        <Button disabled={isPending} type="submit" form="user-form">
+                            {isPending ? <Loader2 className="animate-spin" /> : "Submit"}
+                        </Button>
+                    </DrawerFooter>
+                )}
             </DrawerContent>
         </Drawer>
     )

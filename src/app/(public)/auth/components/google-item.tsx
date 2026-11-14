@@ -1,6 +1,6 @@
 "use client"
 
-import {Item, ItemContent, ItemMedia, ItemTitle} from "@/components/ui/item"
+import {Button} from "@/components/ui/button"
 import {authClient} from "@/lib/auth-client" // your Better Auth client instance
 import {FcGoogle} from "react-icons/fc"
 import {useState} from "react"
@@ -23,14 +23,10 @@ const GoogleItem = () => {
     }
 
     return (
-        <Item variant="muted" className="hover:cursor-pointer" onClick={isLoading ? undefined : handleSignIn}>
-            <ItemMedia variant="icon" className="text-muted-foreground">
-                {isLoading ? <PiCircleDashed className="animate-spin text-base" /> : <FcGoogle className="text-2xl" />}
-            </ItemMedia>
-            <ItemContent>
-                <ItemTitle className="text-muted-foreground">{isLoading ? "Loading..." : "Sign in with Google"}</ItemTitle>
-            </ItemContent>
-        </Item>
+        <Button type="button" variant="outline" size="lg" className="h-10 w-full bg-background" disabled={isLoading} onClick={handleSignIn}>
+            {isLoading ? <PiCircleDashed className="animate-spin" /> : <FcGoogle className="size-5" />}
+            {isLoading ? "Loading..." : "Sign in with Google"}
+        </Button>
     )
 }
 

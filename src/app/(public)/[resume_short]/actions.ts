@@ -2,6 +2,7 @@
 
 import {authServer} from "@/lib/auth-server"
 import prisma from "@/lib/prisma/client"
+import {hasPermissions} from "@/utils/helpers/has-ability-server"
 import {shortToUuid} from "@/utils/helpers/shortenResumeID"
 
 export async function getResumeByHash(resume_short: string) {
@@ -14,7 +15,8 @@ export async function getResumeByHash(resume_short: string) {
 
         if (!resume) throw new Error("Resume not found")
 
-        if (resume.isPublic || resume.userId === session?.user?.id) return {data: resume}
+        // admins with user access can open private resumes from the users drawer
+        if (resume.isPublic || resume.userId === session?.user?.id || (session && (await hasPermissions(["read users", "manage users"])))) return {data: resume}
 
         throw new Error("Resume is not public")
     } catch (error) {

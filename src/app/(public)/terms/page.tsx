@@ -17,7 +17,7 @@ export default async function TermsPage() {
             <section>
                 <h2>2. The service</h2>
                 <p>
-                    seevee is an online resume builder. You can write, edit, print and share resumes for free. AI rewrites (tailoring to a job
+                    seevee is an online resume builder. You can write, edit, print and share resumes for free, up to 50 resumes per account. AI rewrites (tailoring to a job
                     description, translating, or following your own instruction) are paid with credits.
                 </p>
             </section>

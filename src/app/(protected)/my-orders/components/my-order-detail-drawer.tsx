@@ -10,9 +10,13 @@ import {copyToClipboard} from "@/utils/helpers/copyToClipboard"
 import {normalizeString} from "@/utils/helpers/normalize-string"
 import {format} from "date-fns"
 import {toast} from "sonner"
-import {PiArrowSquareOut, PiCalendarDots, PiCopy, PiHandshake, PiHash, PiX} from "react-icons/pi"
+import axios from "axios"
+import {useRouter} from "next/navigation"
+import {authClient} from "@/lib/auth-client"
+import {PiCalendarDots, PiCopy, PiHandshake, PiHash, PiX} from "react-icons/pi"
 import {MyOrder} from "../services/get-my-orders"
 import {STATUS_VARIANT} from "./my-order-item"
+import {formatIdr, formatUsd} from "@/utils/helpers/format-usd"
 
 type MyOrderDetailDrawerProps = {
     orders: MyOrder[]
@@ -24,11 +28,37 @@ const MyOrderDetailDrawer = ({orders}: MyOrderDetailDrawerProps) => {
     const {isMobile} = useScreenSize()
     const view = getParam("view") || ""
     const order = orders.find((o) => o.id === view)
+    const router = useRouter()
+    const {refetch: refetchSession} = authClient.useSession()
 
     const handleCopy = () => {
         if (!order) return
         copyToClipboard(order.midtrans_order_id)
         toast("Order ID copied to clipboard")
+    }
+
+    const syncStatus = async () => {
+        if (!order) return
+        try {
+            await axios.get(`/api/midtrans/status?order_id=${order.midtrans_order_id}`)
+            await refetchSession()
+            router.refresh()
+            toast.success("Order status updated")
+        } catch {
+            toast.error("Failed to fetch order status")
+        }
+    }
+
+    // close the drawer first so its focus trap doesn't fight the Snap popup
+    const handlePay = () => {
+        if (!order?.midtrans_token) return
+        if (!window.snap) return toast.error("Payment is not available. Try again in a moment.")
+        setParams({view: ""})
+        window.snap.pay(order.midtrans_token, {
+            onSuccess: syncStatus,
+            onPending: syncStatus,
+            onError: () => toast.error("Payment failed. Try again."),
+        })
     }
 
     const rows = order
@@ -61,7 +91,8 @@ const MyOrderDetailDrawer = ({orders}: MyOrderDetailDrawerProps) => {
                     ) : (
                         <div className="flex flex-col gap-6">
                             <div className="flex flex-col items-center gap-2 py-2">
-                                <span className="text-2xl font-semibold tabular-nums">Rp {order.gross_amount.toLocaleString("id-ID")}</span>
+                                <span className="text-2xl font-semibold tabular-nums">{order.usd_cents === null ? formatIdr(order.gross_amount) : formatUsd(order.usd_cents)}</span>
+                                {order.usd_cents !== null && <span className="text-xs text-muted-foreground">Charged as {formatIdr(order.gross_amount)}</span>}
                                 <Badge variant={STATUS_VARIANT[order.status]}>{normalizeString(order.status)}</Badge>
                             </div>
                             <ul className="flex flex-col divide-y divide-border rounded-xl border border-border">
@@ -84,12 +115,10 @@ const MyOrderDetailDrawer = ({orders}: MyOrderDetailDrawerProps) => {
                     )}
                 </div>
 
-                {order?.status === "pending" && order.midtrans_redirect && (
+                {order?.status === "pending" && order.midtrans_token && (
                     <DrawerFooter>
-                        <Button asChild className="w-full">
-                            <a href={order.midtrans_redirect} rel="noopener noreferrer">
-                                Pay <PiArrowSquareOut />
-                            </a>
+                        <Button className="w-full" onClick={handlePay}>
+                            Pay
                         </Button>
                     </DrawerFooter>
                 )}

@@ -12,6 +12,8 @@ const userSelect = Prisma.validator<Prisma.UserSelect>()({
     email: true,
     image: true,
     createdAt: true,
+    userCredits: {select: {totalCredits: true}},
+    _count: {select: {resumes: true}},
     roles: {
         select: {role_name: true},
     },
@@ -55,7 +57,7 @@ export async function getUsers(page: number = 1, search = ""): Promise<UsersPage
             select: userSelect,
             ...(where && {where}),
         }),
-        prisma.user.count(),
+        prisma.user.count(where ? {where} : undefined),
     ])
 
     return {
