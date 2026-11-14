@@ -5,7 +5,7 @@ import {ContentStateType} from "./_static/type"
 import {Metadata} from "next"
 
 export const metadata: Metadata = {
-    title: "Seevee | Resume",
+    title: "Resume",
     description: "Create, edit and manage your resume",
 }
 

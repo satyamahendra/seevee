@@ -25,6 +25,7 @@ export type TokenParameter = {
         secure: boolean
     }
     item_details: ItemDetail[]
+    callbacks?: {finish?: string}
     customer_details: {
         first_name?: string
         last_name?: string

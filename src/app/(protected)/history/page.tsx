@@ -10,7 +10,7 @@ type PageProps = {
 }
 
 export const metadata = {
-    title: "Seevee | History",
+    title: "History",
     description: "Your credits usage history",
 }
 

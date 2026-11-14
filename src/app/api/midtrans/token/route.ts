@@ -80,6 +80,7 @@ export async function POST(req: NextRequest) {
             },
             credit_card: {secure: true},
             item_details: itemDetails,
+            callbacks: {finish: `${process.env.BETTER_AUTH_URL}/my-orders`},
             customer_details: {
                 first_name: session?.user?.name,
                 email: session?.user?.email,

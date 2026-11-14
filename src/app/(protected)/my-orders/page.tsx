@@ -7,7 +7,7 @@ import {Loader2} from "lucide-react"
 import MyOrderList from "./components/my-order-list"
 
 export const metadata = {
-    title: "Seevee | My Orders",
+    title: "My Orders",
     description: "Your credit purchases",
 }
 
