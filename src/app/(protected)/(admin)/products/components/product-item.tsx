@@ -7,7 +7,7 @@ import {Separator} from "@/components/ui/separator"
 import {normalizeString} from "@/utils/helpers/normalize-string"
 import {Button} from "@/components/ui/button"
 import ListItem from "@/components/custom/item"
-import {formatUsd} from "@/utils/helpers/format-usd"
+import {formatIdr, formatUsd} from "@/utils/helpers/format-usd"
 
 type ProductItemProps = {
     product: GetProduct
@@ -22,6 +22,7 @@ const ProductItem = ({product}: ProductItemProps) => {
             description={
                 <div className="flex flex-wrap items-center gap-2">
                     <span className="flex items-center gap-2 font-medium">{formatUsd(product.price_actual)}</span>
+                    {product.price_idr !== null && <span className="text-muted-foreground tabular-nums">({formatIdr(product.price_idr)})</span>}
                     <Separator orientation="vertical" />
                     <span className="flex items-center gap-1">
                         <PiCube className="text-sm" />

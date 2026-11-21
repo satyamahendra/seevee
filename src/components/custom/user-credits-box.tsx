@@ -10,7 +10,7 @@ import {Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, 
 import {Badge} from "../ui/badge"
 import CheckoutButton from "@/components/custom/landing/checkout-button"
 import {getActiveProducts} from "@/utils/services/get-active-products"
-import {formatUsd} from "@/utils/helpers/format-usd"
+import {formatIdr, formatUsd} from "@/utils/helpers/format-usd"
 
 type UserCreditsBoxProps = {
     credits: number
@@ -89,6 +89,11 @@ export default function UserCreditsBox({credits}: UserCreditsBoxProps) {
                                                     </span>
                                                 )}
                                             </div>
+                                            {product.price_idr !== null && (
+                                                <span className="text-xs text-muted-foreground tabular-nums">
+                                                    Charged as {formatIdr(product.price_idr)}
+                                                </span>
+                                            )}
                                             {product.credit > 0 && (
                                                 <span className="text-xs text-muted-foreground">
                                                     {formatUsd(Math.round(product.price_actual / product.credit))} per credit

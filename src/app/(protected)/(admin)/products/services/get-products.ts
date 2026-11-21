@@ -8,6 +8,7 @@ import {handleServerError} from "@/utils/helpers/handle-server-errors"
 import {Pagination} from "@/utils/types/pagination"
 import {ServerResult} from "@/utils/types/server-action"
 import {requirePermissions} from "@/utils/helpers/has-ability-server"
+import {usdCentsToIdr, usdToIdrRate} from "@/utils/helpers/format-usd"
 
 const productSelect = Prisma.validator<Prisma.ProductSelect>()({
     id: true,
@@ -28,7 +29,8 @@ const productSelect = Prisma.validator<Prisma.ProductSelect>()({
     },
 })
 
-export type GetProduct = Prisma.ProductGetPayload<{select: typeof productSelect}>
+// price_idr is computed server-side (USD_TO_IDR is server-only); null when unset.
+export type GetProduct = Prisma.ProductGetPayload<{select: typeof productSelect}> & {price_idr: number | null}
 
 export type GetProducts = {
     products: GetProduct[]
@@ -62,11 +64,13 @@ export async function getProducts(page: number = 1, search = "", limit = PAGE_SI
             }),
         ])
 
+        const rate = usdToIdrRate()
+
         return {
             success: true,
             message: "Order fetched successfully",
             data: {
-                products,
+                products: products.map((p) => ({...p, price_idr: rate ? usdCentsToIdr(p.price_actual) : null})),
                 pagination: {
                     page,
                     total,
